@@ -15,8 +15,11 @@ Options:
   --version     Show version.
   --settings    Show current settings.
 """
+
 from __future__ import print_function
 
+import sys
+print('\n***', sys.version,'***\n')
 from .docopt import docopt
 
 from .song import Song

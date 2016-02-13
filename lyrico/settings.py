@@ -7,10 +7,20 @@ from __future__ import print_function
 import os
 import glob2
 
-from ConfigParser import SafeConfigParser
+
+try:
+	# Import the base class for all configparser errors as BaseConfigParserError
+	# >3.2
+	from configparser import ConfigParser
+	from configparser import Error as BaseConfigParserError
+except ImportError:
+	# python27
+	# Refer to the older SafeConfigParser as ConfigParser
+	from ConfigParser import SafeConfigParser as ConfigParser
+	from ConfigParser import Error as BaseConfigParserError
+
 from .helper import get_config_path
 from .helper import BadConfigError
-
 
 
 class Config():
@@ -53,7 +63,7 @@ class Config():
 		"""
 
 		try:
-			conf = SafeConfigParser()
+			conf = ConfigParser()
 
 			# get_config_path raises BadConfigError(0,'') if config.ini is not found.
 			config_path = get_config_path()
@@ -109,7 +119,7 @@ class Config():
 				Config.show_settings()
 
 		# Catch all config parser errors
-		except ConfigParser.Error as e:
+		except BaseConfigParserError as e:
 			print('Unable to load config.')
 			print(e)
 
@@ -215,7 +225,7 @@ class Config():
 			return True
 
 		# Catch all config parser errors
-		except ConfigParser.Error as e:
+		except BaseConfigParserError as e:
 			print('Unable to save settings to config.')
 			print(e)
 			return False

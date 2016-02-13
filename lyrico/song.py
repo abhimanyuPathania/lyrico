@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
+
 from __future__ import print_function
 
 
-import urllib2
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+    from urllib.error import HTTPError, URLError
+
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+    from urllib2 import HTTPError, URLError
+
+import sys
 import os
 import socket
+import codecs
 
 from time import strftime
 from mutagen.id3 import USLT
@@ -12,6 +24,18 @@ from bs4 import BeautifulSoup
 
 from .song_helper import get_song_data, get_song_list
 from .settings import Config
+
+# If we are using python27, import codec module and replace native 'open'
+# with 'codec.open' to write unicode strings to file.
+
+PYTHON_27 = False
+if sys.version_info[0] < 3:
+    import codecs
+
+    # Also set the global flag for more uses.
+    PYTHON_27 = True
+    open = codecs.open
+
 
 
 class Song():
@@ -82,7 +106,7 @@ class Song():
 			print('\nDownloading lyrics for:', self.artist, '-', self.title)
 			print('URL -', self.lyrics_wikia_url)
 
-			response = urllib2.urlopen(self.lyrics_wikia_url)
+			response = urlopen(self.lyrics_wikia_url)
 			html = response.read()
 			soup = BeautifulSoup(html, 'html.parser')
 
@@ -97,22 +121,30 @@ class Song():
 
 				# replace '<\br>' tags with newline characters
 				br_tags = lyricbox.find_all('br')
-				for html_tag in br_tags:
-					html_tag.replace_with('\n')
 
-				# sanitize and save lyrics in unicode
-				self.lyrics = lyricbox.get_text().strip().decode('utf-8')
+				unicode_newline = '\n'
+				if PYTHON_27:
+					# use the unicode object newline character, since we are using
+					# 'codec.open' for python27
+					unicode_newline = u'\n'
+
+				# loop over all <\br> tags and replace with newline characters
+				for html_tag in br_tags:
+					html_tag.replace_with(unicode_newline)
+
+				# lyrics are returned as unicode object
+				self.lyrics = lyricbox.get_text().strip()
 			else:
 				# lyricbox div absent if lyrics are not found
 				self.error = 'Lyrics not found. Check artist or title name.'
 
 		# Catch bad server response
-		except urllib2.HTTPError as e:
+		except HTTPError as e:
 			## currently the bad requests return status code 404 and not html page without lyrics
 			self.error = e.reason + '. Check title or artist name.' + ' Error code:' + str(e.code) 
 
 		# catch all network errors
-		except urllib2.URLError as e:
+		except URLError as e:
 			self.error = 'No network connectivity.'
 
 		# catch socket error. Can get because of bot sniffing or bad connectivity.
@@ -130,9 +162,10 @@ class Song():
 		Config.save_to_file, Config.save_to_tag settings
 
 		"""
+
 		if self.lyrics and Config.save_to_file:
 			try:
-				with open(self.lyrics_file_path, 'w') as f:
+				with open(self.lyrics_file_path, 'w', encoding='utf-8') as f:
 					f.write('Artist - ' + self.artist + '\n')
 					f.write('Title - ' + self.title + '\n')
 
@@ -231,7 +264,7 @@ class Song():
 		returns the log string of the song which is used in final log.
 
 		"""
-		template = ' >\t{file}\t{tag}\t\t{song}\t\t{error}\n'
+		template = '. \t{file}\t{tag}\t\t{song}\t\t{error}\n'
 		log = {}
 
 		# file_status and tag each have 4 possible values
@@ -274,7 +307,7 @@ class Song():
 	def log_results(song_list):
 
 		try:
-			with open(os.path.join(Config.lyrics_dir, 'log.txt'), 'w') as f:
+			with open(os.path.join(Config.lyrics_dir, 'log.txt'), 'w', encoding='utf-8') as f:
 				log_date = strftime("%H:%M:%S  %d-%m-%y")
 
 				f.write('Log Date ' + log_date + '\n')
@@ -292,14 +325,17 @@ class Song():
 				f.write('Tags saved: ' + str(Song.lyrics_saved_to_tag_count))
 				f.write('\n\n')
 
-				table_header = '\t[FILE]\t[TAG]\t\t[ARTIST-TITLE]\t\t\t\t[ERROR]\n'
+				table_header = '  \t[FILE]\t[TAG]\t\t\t[ARTIST-TITLE]\t\t\t\t[ERROR]\n'
 				table_border = '='*100 + '\n'
 
 				f.write(table_header)
 				f.write(table_border)
 
+				index_number = 1
 				for song in song_list:
+					f.write(str(index_number))
 					f.write(song.get_log_string())
+					index_number += 1
 		except IOError as e:
 			print('Unable to build log.')
 			print('"lyrics_dir" does not exist. Please set "lyric_dir" to a folder which exists.')

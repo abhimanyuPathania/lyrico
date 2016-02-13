@@ -10,7 +10,6 @@ import re
 import os
 
 
-
 class BadConfigError(Exception):
 	def __init__(self, errno, value):
 		self.value = value

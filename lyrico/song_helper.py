@@ -9,8 +9,13 @@ from __future__ import print_function
 
 import os
 import glob2
-import urllib
 
+try:
+	from urllib.parse  import quote
+except ImportError:
+	# Python27
+	from urllib import quote
+    
 from mutagen.easyid3 import ID3
 from mutagen.mp4 import MP4
 from mutagen.flac import FLAC
@@ -129,10 +134,11 @@ def get_song_data(path):
 
 	# build wikia URL, filename and filepath
 	if artist and title:
-		# replace spaces with underscores and call urllib.quote_plus to encode other characters
+		# replace spaces with underscores. This prints nicer URLs in log.
+		# (wikias URL router converts spaces to underscores)
+		# Call quote to encode other characters.
 		lyrics_wikia_url = 'http://lyrics.wikia.com/wiki/%s:%s' % \
-		( urllib.quote_plus(artist.replace(' ', '_')), urllib.quote_plus(title.replace(' ', '_')))
-
+		( quote(artist.replace(' ', '_')), quote(title.replace(' ', '_')))
 		
 		lyrics_file_name = '%s - %s.txt' % (artist, title)
 		lyrics_file_path = os.path.join(Config.lyrics_dir, lyrics_file_name)
