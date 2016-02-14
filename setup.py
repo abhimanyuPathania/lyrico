@@ -51,6 +51,7 @@ setup(
         'Programming Language :: Python :: 3.5',
 
         'Operating System :: Microsoft',
+        'Operating System :: Unix',
     ],
 
     author = "Abhimanyu Pathania",
@@ -62,7 +63,7 @@ setup(
         'mutagen',
         'glob2',
         'beautifulsoup4',
-        'win-unicode-console'
+        'win-unicode-console >= 0.4'
     ],
 
     include_package_data = True,

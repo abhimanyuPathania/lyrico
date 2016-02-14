@@ -94,7 +94,7 @@ class Config():
 
 			
 			# Loading this with user config, we need to call the load_config only once at start.
-			Config.lyric_files_in_dir = glob2.glob(os.path.join(Config.lyrics_dir, '**\\*.txt'))
+			Config.lyric_files_in_dir = glob2.glob(os.path.join(Config.lyrics_dir, '**/*.txt'))
 
 			Config.is_loaded = True
 

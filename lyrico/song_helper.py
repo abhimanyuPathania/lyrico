@@ -7,7 +7,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
+import sys
 import os
 import glob2
 
@@ -23,7 +23,6 @@ from mutagen.flac import FLAC
 
 from .settings import Config
 from .helper import sanitize_data, get_wikia_url
-
 
 
 def get_key(tag, key, format):
@@ -59,7 +58,17 @@ def get_key(tag, key, format):
 				if data:
 					break
 		else:
-			# simple dictionary lookup
+			# m4a or mp4
+
+			# For python27 encoding key(which is a unicode object due to futures import)
+			# to 'latin-1' fixes the fetch from dictionary
+
+			# mp4 standard uses latin-1 encoding for these tag names.
+			# \xa9 is copyright symbol in that encoding.
+			if sys.version_info[0] < 3:
+				key = key.encode('latin-1')
+
+			# Python3 is able to handle it internally due to implicit encoding(?)
 			data = tag.get(key)
 
 		# mp4, flac tags(here simple dict) return None for keys that are not present
@@ -180,7 +189,7 @@ def get_song_list(path):
 	song_list = []
 
 	for ext in Config.audio_formats:
-		pattern = '**\\*.' + ext
+		pattern = '**/*.' + ext
 		song_list.extend(glob2.glob(os.path.join(path, pattern)))
 
 	return song_list

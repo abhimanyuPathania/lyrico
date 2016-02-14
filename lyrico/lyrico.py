@@ -19,17 +19,16 @@ Options:
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
 import platform
 
-print('\n***', sys.version,'***\n')
 from .docopt import docopt
 
 from .song import Song
 from .song_helper import get_song_list
 from .settings import Config
 
-__version__ = "0.1.0"
+# testpypi 0.2.5
+__version__ = "0.2.5"
 
 
 def main():
@@ -40,7 +39,6 @@ def main():
 		win_unicode_console.enable()
 
 	args = docopt(__doc__, version = ('lyrico ' + __version__))
-	# print(args)
 
 	# The check_config flag instructs the "Config.load_config" to skip the 'BadConfigError's.
 	# So only when user is running downloads, the config must be valid.

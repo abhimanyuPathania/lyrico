@@ -100,7 +100,7 @@ class Song():
 			return
 
 		try:
-			# print('\nDownloading lyrics for:', self.artist, '-', self.title)
+			print('\nDownloading lyrics for:', self.artist, '-', self.title)
 			print('URL -', self.lyrics_wikia_url)
 
 			response = urlopen(self.lyrics_wikia_url)
@@ -196,7 +196,11 @@ class Song():
 									text=self.lyrics))
 
 				if self.format == 'm4a' or self.format == 'mp4':
-					self.tag['\xa9lyr'] = self.lyrics
+					lyrics_key = '\xa9lyr'
+					
+					if sys.version_info[0] < 3:
+						lyrics_key = lyrics_key.encode('latin-1')
+					self.tag[lyrics_key] = self.lyrics
 
 				if self.format == 'flac':
 					self.tag['UNSYNCED LYRICS'] = self.lyrics
@@ -285,8 +289,13 @@ class Song():
 					tag = 'Failed'
 		else:
 			tag = 'Ignored'
+		
+		# avoid exceptions raised for concatinating Unicode and None types
+		if self.artist and self.title:
+			log['song'] = self.artist + ' - ' + self.title
+		else:
+			log['song'] = self.path
 
-		log['song'] = self.artist + ' - ' + self.title
 		log['error'] = self.error
 
 		log['file'] = file_status
