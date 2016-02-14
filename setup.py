@@ -63,7 +63,7 @@ setup(
         'mutagen',
         'glob2',
         'beautifulsoup4',
-        'win-unicode-console >= 0.4'
+        'win-unicode-console >= 0.4',
     ],
 
     include_package_data = True,
