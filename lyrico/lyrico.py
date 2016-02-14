@@ -17,8 +17,11 @@ Options:
 """
 
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import sys
+import platform
+
 print('\n***', sys.version,'***\n')
 from .docopt import docopt
 
@@ -30,6 +33,11 @@ __version__ = "0.1.0"
 
 
 def main():
+
+	# Fix console for windows users
+	if platform.system() == 'Windows':
+		import win_unicode_console
+		win_unicode_console.enable()
 
 	args = docopt(__doc__, version = ('lyrico ' + __version__))
 	# print(args)
@@ -117,5 +125,9 @@ def main():
 		print('\nBuilding log...')
 		Song.log_results(song_list)
 		print('FINISHED')
+		
+		# Disable unicode console anyways
+		if platform.system() == 'Windows':
+			win_unicode_console.disable()
 
 

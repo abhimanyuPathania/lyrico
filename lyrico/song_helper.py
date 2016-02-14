@@ -5,6 +5,7 @@
 """
 
 from __future__ import print_function
+from __future__ import unicode_literals
 
 
 import os
@@ -21,7 +22,7 @@ from mutagen.mp4 import MP4
 from mutagen.flac import FLAC
 
 from .settings import Config
-from .helper import sanitize_data
+from .helper import sanitize_data, get_wikia_url
 
 
 
@@ -81,10 +82,13 @@ def get_song_data(path):
 
 		'path' is the absolute path to the audio file.  
 	"""
-
 	data = {}
 
 	tag = None
+	# artist = None
+	# title = None
+	# album = None
+	# lyrics = None
 	song_format = None
 	
 	lyrics_wikia_url = None
@@ -134,12 +138,7 @@ def get_song_data(path):
 
 	# build wikia URL, filename and filepath
 	if artist and title:
-		# replace spaces with underscores. This prints nicer URLs in log.
-		# (wikias URL router converts spaces to underscores)
-		# Call quote to encode other characters.
-		lyrics_wikia_url = 'http://lyrics.wikia.com/wiki/%s:%s' % \
-		( quote(artist.replace(' ', '_')), quote(title.replace(' ', '_')))
-		
+		lyrics_wikia_url = get_wikia_url(artist, title)
 		lyrics_file_name = '%s - %s.txt' % (artist, title)
 		lyrics_file_path = os.path.join(Config.lyrics_dir, lyrics_file_name)
 	else:

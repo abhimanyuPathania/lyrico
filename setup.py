@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-"""setup.py: setuptools control."""
+"""setup.py: setuptools control. Only build using Python27"""
 
 
 import re
@@ -29,7 +29,7 @@ setup(
     version = version,
     description = "Download and save lyrics to the song's tag and text file.",
     long_description = long_descr,
-    keywords='lyrics audio tags',
+    keywords='lyrics, audio, tags',
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
@@ -48,6 +48,7 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.5',
 
         'Operating System :: Microsoft',
     ],
@@ -60,7 +61,8 @@ setup(
     install_requires = [
         'mutagen',
         'glob2',
-        'beautifulsoup4'
+        'beautifulsoup4',
+        'win-unicode-console'
     ],
 
     include_package_data = True,

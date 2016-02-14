@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import unicode_literals
 
 
 try:
@@ -28,12 +29,8 @@ from .settings import Config
 # If we are using python27, import codec module and replace native 'open'
 # with 'codec.open' to write unicode strings to file.
 
-PYTHON_27 = False
 if sys.version_info[0] < 3:
     import codecs
-
-    # Also set the global flag for more uses.
-    PYTHON_27 = True
     open = codecs.open
 
 
@@ -103,7 +100,7 @@ class Song():
 			return
 
 		try:
-			print('\nDownloading lyrics for:', self.artist, '-', self.title)
+			# print('\nDownloading lyrics for:', self.artist, '-', self.title)
 			print('URL -', self.lyrics_wikia_url)
 
 			response = urlopen(self.lyrics_wikia_url)
@@ -122,15 +119,9 @@ class Song():
 				# replace '<\br>' tags with newline characters
 				br_tags = lyricbox.find_all('br')
 
-				unicode_newline = '\n'
-				if PYTHON_27:
-					# use the unicode object newline character, since we are using
-					# 'codec.open' for python27
-					unicode_newline = u'\n'
-
 				# loop over all <\br> tags and replace with newline characters
 				for html_tag in br_tags:
-					html_tag.replace_with(unicode_newline)
+					html_tag.replace_with('\n')
 
 				# lyrics are returned as unicode object
 				self.lyrics = lyricbox.get_text().strip()
