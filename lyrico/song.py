@@ -330,11 +330,28 @@ class Song():
 				f.write(table_header)
 				f.write(table_border)
 
+				# write individual song log strings
 				index_number = 1
 				for song in song_list:
 					f.write(str(index_number))
 					f.write(song.get_log_string())
 					index_number += 1
+
+				# Add Key to log
+				f.write('\n\n\t**** KEY ****\n')
+
+				f.write("\t# 'Saved' - File or tag was saved successfully.")
+				f.write("\n")
+
+				f.write("\t# 'Failed' - Download or save failed. See error.")
+				f.write("\n")
+
+				f.write("\t# 'Ignored' - Ignored according to 'save_to_file', 'save_to_tag' setting.")
+				f.write("\n")
+
+				f.write("\t# 'Present' - Detected tag or file and skipped download as per 'overwrite' setting.")
+				f.write("\n")
+
 		except IOError as e:
 			print('Unable to build log.')
 			print('"lyrics_dir" does not exist. Please set "lyric_dir" to a folder which exists.')

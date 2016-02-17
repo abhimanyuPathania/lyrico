@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-"""setup.py: setuptools control"""
+"""setup.py: setuptools control. Always build with Python3"""
 
 
 import sys
@@ -18,12 +18,17 @@ version = re.search(
     ).group(1)
 
 
-# http://rst.ninjs.org/?n=7fff89b4cadb0bb4bfde3b246d7c1044&theme=basic
+# http://rst.ninjs.org/?n=0727fbbc8191d2e9a680367593340ae7&theme=basic
 with open("README.rst", "rb") as f:
     long_descr = f.read().decode("utf-8")
 
 # Code that runs only during building source distribution.
 if sys.argv[1] == 'sdist':
+
+    # don't allow building distributions with Python27
+    if sys.version_info[0] < 3:
+        raise Exception
+
     # 'import' from the pre_sdist module inside the 'if' allows to
     # use any python package safely.
     from pre_sdist import reset_config
@@ -52,7 +57,7 @@ setup(
     cmdclass={'install': MyInstall},
 
     version = version,
-    description = "Download lyrics. Embed lyrics in songs and save to files.",
+    description = "A simple command-line lyrics downloader.",
     long_description = long_descr,
     keywords='lyrics audio foobar2000 tags mp3',
     classifiers=[
