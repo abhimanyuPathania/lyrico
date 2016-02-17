@@ -27,8 +27,8 @@ from .song import Song
 from .song_helper import get_song_list
 from .settings import Config
 
-# testpypi 0.2.6
-__version__ = "0.2.6"
+# testpypi 0.2.12
+__version__ = "0.2.12"
 
 
 def main():
@@ -124,7 +124,7 @@ def main():
 		Song.log_results(song_list)
 		print('FINISHED')
 		
-		# Disable unicode console anyways
+		# Disable windows unicode console anyways
 		if platform.system() == 'Windows':
 			win_unicode_console.disable()
 

@@ -1,0 +1,4 @@
+glob2
+mutagen>=1.31
+beautifulsoup4>=4.4.1
+win-unicode-console>=0.4; sys_platform == 'win32'

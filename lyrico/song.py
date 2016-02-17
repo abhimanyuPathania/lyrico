@@ -17,7 +17,6 @@ except ImportError:
 import sys
 import os
 import socket
-import codecs
 
 from time import strftime
 from mutagen.id3 import USLT

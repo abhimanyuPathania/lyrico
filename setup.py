@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-"""setup.py: setuptools control. Only build using Python27"""
+"""setup.py: setuptools control"""
 
 
+import sys
 import re
 from setuptools import setup, find_packages
+from subprocess import call
+from setuptools.command.install import install
 
 
 version = re.search(
@@ -15,8 +18,28 @@ version = re.search(
     ).group(1)
 
 
+# http://rst.ninjs.org/?n=7fff89b4cadb0bb4bfde3b246d7c1044&theme=basic
 with open("README.rst", "rb") as f:
     long_descr = f.read().decode("utf-8")
+
+# Code that runs only during building source distribution.
+if sys.argv[1] == 'sdist':
+    # 'import' from the pre_sdist module inside the 'if' allows to
+    # use any python package safely.
+    from pre_sdist import reset_config
+    reset_config()
+    
+
+# Install dependencies from requirements.txt (install_requires is not working)
+# With requirements.txt, win-unicode-console will only be installed for Windows users.
+class MyInstall(install):
+    def run(self):
+        # Call subprocess to run te 'pip' command.
+        # Only works, when user installs from sdist
+        call(['pip', 'install', '-r', 'requirements.txt'])
+
+        # Run 'install' to install lyrico
+        install.run(self)
 
 
 setup(
@@ -26,28 +49,23 @@ setup(
         "console_scripts": ['lyrico = lyrico.lyrico:main']
         },
 
+    cmdclass={'install': MyInstall},
+
     version = version,
-    description = "Download and save lyrics to the song's tag and text file.",
+    description = "Download lyrics. Embed lyrics in songs and save to files.",
     long_description = long_descr,
-    keywords='lyrics, audio, tags',
+    keywords='lyrics audio foobar2000 tags mp3',
     classifiers=[
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
         'Development Status :: 3 - Alpha',
 
-        # Indicate who your project is intended for
         'Intended Audience :: End Users/Desktop',
         'Topic :: Multimedia :: Sound/Audio',
 
-        # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
 
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
 
         'Operating System :: Microsoft',
@@ -58,13 +76,6 @@ setup(
     author_email = "abpindia1944@gmail.com",
     url = "https://github.com/abhimanyuPathania/lyrico",
     license='MIT',
-
-    install_requires = [
-        'mutagen',
-        'glob2',
-        'beautifulsoup4',
-        'win-unicode-console >= 0.4',
-    ],
 
     include_package_data = True,
     package_data = {
