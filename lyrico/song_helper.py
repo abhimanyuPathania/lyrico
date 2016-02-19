@@ -17,21 +17,35 @@ except ImportError:
 	# Python27
 	from urllib import quote
     
-from mutagen.easyid3 import ID3
+from mutagen.id3 import ID3
 from mutagen.mp4 import MP4
 from mutagen.flac import FLAC
+from mutagen.oggvorbis import OggVorbis
+from mutagen.oggflac import OggFLAC
+from mutagen.asf import ASF
+from mutagen import MutagenError
 
 from .settings import Config
 from .helper import sanitize_data, get_wikia_url
+from .audio_format_keys import FORMAT_KEYS
 
 
 def get_key(tag, key, format):
+	# data stores the result of key lookup from the dictionary like object
+	# returned by mutagen. The results of key lookups are lists or None when it does not exist.
 	data = None
+
+	# result is the final value returned by get_key function. 
 	result = None
-	flac_lyrics_keys = ['UNSYNCED LYRICS', 'LYRICS', 'SYNCED LYRICS']
+
+	if not tag:
+		return result
+
+	# extra keys to read from FLAC and OGG formats
+	lyrics_keys = ['LYRICS', 'UNSYNCEDLYRICS', 'UNSYNCED LYRICS', 'SYNCED LYRICS']
 
 	if format == 'mp3':
-		## get for mp3 tags is not fetching lyrics(None). Using getall instead.
+		## 'get' for mp3 tags is not fetching lyrics(None). Using getall instead.
 		data = tag.getall(key)
 		if not len(data):
 			return result
@@ -44,21 +58,20 @@ def get_key(tag, key, format):
 			# so we look one list deeper
 			result = data[0].text[0]
 
-	if format == 'm4a' or format == 'mp4' or format == 'flac':
-		
-		if format == 'flac' and key == 'UNSYNCED LYRICS':
+	elif format == 'wma' or format == 'WMA':
+		# For ASF Frames key lookups are lists containing ASFUnicodeAttribute type
+		# type objects instead of Unicode objects
+		data = tag.get(key)
 
-			# for flacs loop through different keys to look for lyrics
-			# UNSYNCED LYRICS will be used as standard for 'lyrico' 
-			for flac_key in flac_lyrics_keys:
-				# also try lowercases
-				data = tag.get(key) or tag.get(key.lower())
+		# Safely extract the Unicode 'value' from ASFUnicodeAttribute object
+		result = tag.get(key)[0].value if data else None
+	else:
+		# mp4, m4a, flac, OGG
 
-				# if we find lyrics, stop looping
-				if data:
-					break
-		else:
-			# m4a or mp4
+		# For all these formats, the data object is a simple dictionary 
+		# with keys mapping to lists.
+
+		if format == 'm4a' or format == 'mp4':
 
 			# For python27 encoding key(which is a unicode object due to futures import)
 			# to 'latin-1' fixes the fetch from dictionary
@@ -71,14 +84,70 @@ def get_key(tag, key, format):
 			# Python3 is able to handle it internally due to implicit encoding(?)
 			data = tag.get(key)
 
-		# mp4, flac tags(here simple dict) return None for keys that are not present
-		if not data:
-			return result
+		if format == 'flac' or format == 'OGG':
 
-		result = data[0]
+			if key == FORMAT_KEYS[format]['lyrics']:
 
-	return result
+				# separately treat lookup of lyrics in these formats
+				
+				# Loop through different keys to look for lyrics.
 
+				# 'LYRICS' will be used as standard for 'lyrico' for Vorbis Comments
+				# This includes .flac, .OGG(Vorbis and FLAC) files
+				for lr_key in lyrics_keys:
+					# also try lowercases
+					data = tag.get(lr_key) or tag.get(lr_key.lower())
+
+					# if we find lyrics, stop looping
+					if data:
+						break
+			else:
+				# Normal lookup for other properties
+				data = tag.get(key)
+
+		# till here the data ( for mp4, m4a, flac, OGG) will be a list 
+		# containing the value or None. Safely lookup in list
+		result = data[0] if data else None
+
+	# return sanitized value of result
+	return sanitize_data(result) 
+
+
+def extract_ogg_tag(path):
+	
+	"""
+		Read tags out of .OGG files encoded with different codecs
+		Returns a tuple (tag, error)
+	"""
+	ogg_tag = None
+	error = None
+
+	# Encapsulate all try except blocks in if statements.
+	# Only read for tag if it already does not exist.
+
+	if not ogg_tag:		
+		try:
+			# Try to read OGG-Vorbis files
+			ogg_tag = OggVorbis(path)
+
+		except Exception:
+			# move to next codec type
+			pass
+
+	if not ogg_tag:		
+		try:
+			# Try to read OGG-FLAC files
+			ogg_tag = OggFLAC(path)
+
+		except Exception:
+			# move to next codec type
+			pass
+
+	if not ogg_tag:
+		# log error for user to see
+		error = 'Unable to read metadata from the .OGG file. Only Vorbis and FLAC are supported.'
+
+	return (ogg_tag, error)
 
 def get_song_data(path):
 	
@@ -94,10 +163,10 @@ def get_song_data(path):
 	data = {}
 
 	tag = None
-	# artist = None
-	# title = None
-	# album = None
-	# lyrics = None
+	artist = None
+	title = None
+	album = None
+	lyrics = None
 	song_format = None
 	
 	lyrics_wikia_url = None
@@ -112,46 +181,45 @@ def get_song_data(path):
 	# format will the part of string after last '.' character
 	song_format = path[ path.rfind('.') + 1 : ]
 
+
 	try:
-		# Extract artist and title
 		if song_format == 'mp3':
 			tag = ID3(path)
-			artist = get_key(tag, 'TPE1', song_format)
-			title = get_key(tag, 'TIT2', song_format)
-			album = get_key(tag, 'TALB', song_format)
-			lyrics = get_key(tag, 'USLT', song_format)
-
+		if song_format == 'mp4' or song_format == 'm4a':
+			tag = MP4(path)
 		if song_format == 'flac':
 			tag = FLAC(path)
-			artist = get_key(tag, 'artist', song_format)
-			title = get_key(tag, 'title', song_format)
-			album = get_key(tag, 'album', song_format)
-			lyrics = get_key(tag, 'UNSYNCED LYRICS', song_format)
-
-		# used for m4a, mp4 containers and any aac, mp4 codecs
-		if song_format == 'm4a' or song_format == 'mp4':
-			tag = MP4(path)
-			artist = get_key(tag, '\xa9ART', song_format)
-			title = get_key(tag, '\xa9nam', song_format)
-			album = get_key(tag, '\xa9alb', song_format)
-			lyrics = get_key(tag, '\xa9lyr', song_format)
-
-		# remove uncessary white-space
-		artist = sanitize_data(artist)
-		title = sanitize_data(title)
-		album = sanitize_data(album)
-		lyrics = sanitize_data(lyrics)
-
+		if song_format == 'wma' or song_format == 'WMA':
+			tag = ASF(path)
+		if song_format == 'OGG':
+			tag, error = extract_ogg_tag(path)
+	except IOError:
+		error = 'Unable to locate the file. Could have been moved during operation.'
+	except MutagenError:
+		error = 'Unable to read metadata. Unsupported codec or tag does not exist.'
 	except Exception as e:
+		error = str(e)
 		print(e)
+	else:
+		# This only runs if reading tags creates no exceptions
+		artist = get_key(tag, FORMAT_KEYS[song_format]['artist'], song_format)
+		title = get_key(tag, FORMAT_KEYS[song_format]['title'], song_format)
+		album = get_key(tag, FORMAT_KEYS[song_format]['album'], song_format)
+		lyrics = get_key(tag, FORMAT_KEYS[song_format]['lyrics'], song_format)
 
 	# build wikia URL, filename and filepath
+	# If tag is not read or either of artist name or title is not preset
+	# those properties of the Song object would be intialized to None
 	if artist and title:
 		lyrics_wikia_url = get_wikia_url(artist, title)
 		lyrics_file_name = '%s - %s.txt' % (artist, title)
 		lyrics_file_path = os.path.join(Config.lyrics_dir, lyrics_file_name)
 	else:
-		error = 'Artist name or song title not found.'
+		# Only log the following error if the tags have been read correctly but
+		# artist or title was simply not present in the tag.
+		# Else the pre-existing error due to reading of tags should be logged
+		if not error:
+			error = 'Artist name or song title not found.'
 
 
 	# check if lyrics file already exists in LYRICS_DIR

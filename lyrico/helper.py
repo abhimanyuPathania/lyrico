@@ -37,11 +37,8 @@ def get_config_path():
 def sanitize_data(s):
 	"""Removes excess white-space from strings"""
 
-	if not s:
-		return None
-
 	# If string only empty spaces return None
-	if s.isspace():
+	if not s or s.isspace():
 		return None
 
 	# remove any white-space from beginning or end of the string

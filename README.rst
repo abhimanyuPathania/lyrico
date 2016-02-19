@@ -12,7 +12,7 @@ lyrico
 Support
 =========
 
- **Audio Formats** - mp3, flac, m4a and mp4.
+ **Audio Formats** - mp3, flac, m4a, mp4, wma, OGG (Vorbis and FLAC).
 
  **Python** - Python 27 and Python 3 (tested on Python 3.5 Python 3.4)
 
@@ -166,6 +166,23 @@ This gives following message in command prompt::
   
   However this won't work for the very first run.
 
+Audio Formats and Tags
+=======================
+Below is the table of supported audio formats and their supported tags:
+
++--------------------------------------------+----------------------------------------------+
+| Audio Format                               | Tag                                          |
++============================================+==============================================+
+| mp3                                        | ID3 Tags                                     |
++--------------------------------------------+----------------------------------------------+
+| flac                                       | Vorbis Comments                              |
++--------------------------------------------+----------------------------------------------+
+| m4a, mp4                                   | MP4 Tags (iTunes metadata)                   |
++--------------------------------------------+----------------------------------------------+
+| wma                                        | ASF                                          |
++--------------------------------------------+----------------------------------------------+
+| OGG (Vorbis and FLAC)                      | Vorbis Comments                              |
++--------------------------------------------+----------------------------------------------+
 
 ``lyrico`` goodness
 =====================
@@ -188,6 +205,12 @@ Here are somethings that ``lyrico`` does well:
 ====================
 
 Here are few points you should know before using ``lyrico``:
+
+- **Your tags** - ``lyrico`` uses metadata in your tags for building URLs. Hence your songs should be tagged with correct 'artist', 'title' information.
+
+  ``lyrico`` also assumes that you're using standard tags for each format (container) of your songs. For example, ``lyrico`` assumes that your ``.mp3`` files are using the standard ``ID3`` tags and only reads metadata for those. If you are using something like an ``APEv2`` tag with an ``.mp3`` file,  ``lyrico`` won't be able to read it and would log the pertinent error in the ``log.txt``.
+
+  You don't need to be concerned about this unless you have forcibly embedded non-standard tags in your songs with some other software. *Table of supported tags for audio formats is given above.*
 
 - **ID3 tag versions** - ``lyrico`` will convert any old ID3 tag to ID3v2.4 if ``save_to_tag`` is enabled. This is the default behavior of *mutagen*; the underlying dependency used by ``lyrico`` to read ID3 tags.
 
@@ -229,5 +252,12 @@ A note on mass downloading
 Since ``lyrico`` is simply scraping lyrics off the lyrics.wikia's HTML pages, please don't set ``source_dir`` to a folder having thousands of songs.
 
 They might ban your bot and ``lyrico`` does not use any masking. Also, it will be slow anyways since ``lyrico`` does not batch download. It sends requests one at a time. I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``. 
+
+Changelog
+==========
+
+- 0.3.0 Added support for ``OGG`` and ``wma`` audio formats. Replaced ``UNSYNCED LYRICS`` with ``LYRICS`` tags to embed lyrics in Vorbis Comments.
+- 0.2.0 Added documentation and tutorial.
+- 0.1.0 Initial release.
 
 

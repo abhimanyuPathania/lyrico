@@ -20,10 +20,13 @@ import socket
 
 from time import strftime
 from mutagen.id3 import USLT
+from mutagen.asf import ASFUnicodeAttribute
+from mutagen import MutagenError
 from bs4 import BeautifulSoup
 
 from .song_helper import get_song_data, get_song_list
 from .settings import Config
+from .audio_format_keys import FORMAT_KEYS
 
 # If we are using python27, import codec module and replace native 'open'
 # with 'codec.open' to write unicode strings to file.
@@ -188,21 +191,29 @@ class Song():
 				print('Failed:', err_str)
 
 		if self.lyrics and Config.save_to_tag:
+			lyrics_key = FORMAT_KEYS[self.format]['lyrics']
 			try:
 				if self.format == 'mp3':
 					# encoding = 3 for UTF-8
-					self.tag.add(USLT(encoding=3, lang=u'eng', desc=u'lyrics.wikia',
+					self.tag.add(USLT(encoding=3, lang = u'eng', desc = u'lyrics.wikia',
 									text=self.lyrics))
 
 				if self.format == 'm4a' or self.format == 'mp4':
-					lyrics_key = '\xa9lyr'
+					# lyrics_key = '\xa9lyr'
 					
 					if sys.version_info[0] < 3:
 						lyrics_key = lyrics_key.encode('latin-1')
 					self.tag[lyrics_key] = self.lyrics
 
-				if self.format == 'flac':
-					self.tag['UNSYNCED LYRICS'] = self.lyrics
+				# Both flac and OGG(Vorbis & FLAC), are being read/write as Vorbis Comments.
+				# Vorbis Comments don't have a standard 'lyrics' tag. The 'LYRICS' tag is 
+				# most common non-standard tag used for lyrics.
+				if self.format == 'flac' or self.format == 'OGG':
+					self.tag[lyrics_key] = self.lyrics
+
+				if self.format == 'wma' or self.format == 'WMA':
+					# ASF Format uses ASFUnicodeAttribute objects instead of Python's Unicode
+					self.tag[lyrics_key] = ASFUnicodeAttribute(self.lyrics)
 
 				self.tag.save()
 				self.saved_to_tag = True
@@ -210,6 +221,11 @@ class Song():
 
 				print('Success: Lyrics saved to tag.')
 
+			except MutagenError:
+				err_str = 'Cannot save lyrics to tag. Codec/Format not supported'
+				self.error = err_str
+				print('Failed:', err_str)
+				
 			except IOError as e:
 				err_str = 'Cannot save lyrics to tag. The file is opened or in use.'
 				self.error = err_str
