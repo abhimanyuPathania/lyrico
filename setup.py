@@ -18,7 +18,7 @@ version = re.search(
     ).group(1)
 
 
-# http://rst.ninjs.org/?n=0727fbbc8191d2e9a680367593340ae7&theme=basic
+# http://rst.ninjs.org/?n=223d5a4361899d98d831885780c7a2fe&theme=basic
 with open("README.rst", "rb") as f:
     long_descr = f.read().decode("utf-8")
 

@@ -25,8 +25,8 @@ from mutagen.oggflac import OggFLAC
 from mutagen.asf import ASF
 from mutagen import MutagenError
 
-from .settings import Config
-from .helper import sanitize_data, get_wikia_url
+from .config import Config
+from .helper import sanitize_data
 from .audio_format_keys import FORMAT_KEYS
 
 
@@ -169,7 +169,6 @@ def get_song_data(path):
 	lyrics = None
 	song_format = None
 	
-	lyrics_wikia_url = None
 	lyrics_file_name = None
 	lyrics_file_path = None
 
@@ -211,7 +210,6 @@ def get_song_data(path):
 	# If tag is not read or either of artist name or title is not preset
 	# those properties of the Song object would be intialized to None
 	if artist and title:
-		lyrics_wikia_url = get_wikia_url(artist, title)
 		lyrics_file_name = '%s - %s.txt' % (artist, title)
 		lyrics_file_path = os.path.join(Config.lyrics_dir, lyrics_file_name)
 	else:
@@ -237,7 +235,6 @@ def get_song_data(path):
 	data['album'] = album
 	data['format'] = song_format
 
-	data['lyrics_wikia_url'] = lyrics_wikia_url
 	data['lyrics_file_name'] = lyrics_file_name
 	data['lyrics_file_path'] = lyrics_file_path
 

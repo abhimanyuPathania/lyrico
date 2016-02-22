@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -24,8 +25,11 @@ from mutagen.asf import ASFUnicodeAttribute
 from mutagen import MutagenError
 from bs4 import BeautifulSoup
 
+from .lyrics_wikia import donwload_from_lyrics_wikia
+from .lyrics_n_music import donwload_from_lnm
+from .azlyrics import donwload_from_azlyrics
 from .song_helper import get_song_data, get_song_list
-from .settings import Config
+from .config import Config
 from .audio_format_keys import FORMAT_KEYS
 
 # If we are using python27, import codec module and replace native 'open'
@@ -41,7 +45,7 @@ class Song():
 	"""Container objects repersenting each globbed song in DIR"""
 
 	# holds count for songs for valid metadata
-	valid_url_count = 0
+	valid_metadata_count = 0
 
 	# Count for songs whose lyrics are successfully saved to file.
 	lyrics_saved_to_file_count = 0
@@ -63,7 +67,6 @@ class Song():
 		self.album = data['album']
 		self.format = data['format']
 
-		self.lyrics_wikia_url = data['lyrics_wikia_url']
 		self.lyrics_file_name = data['lyrics_file_name']
 		self.lyrics_file_path = data['lyrics_file_path']
 
@@ -80,19 +83,19 @@ class Song():
 		# Final status to build log
 		self.saved_to_tag = False
 		self.saved_to_file = False
-
+		self.source = None
 		self.error = data['error']
 
 		# As the songs are read from the files, update the class variable.
 		# This is count of songs that have valid artist and title.
-		if self.lyrics_wikia_url:
-			Song.valid_url_count += 1
+		if self.title and self.artist:
+			Song.valid_metadata_count += 1
 
 	def download_lyrics(self):
+
 		"""
-		Makes HTTP request to self.lyrics_wikia_url.
-		Stips HTML and extracts and sanitizes lyrics.
-		Calls self.save_lyrics to save them.
+			Only called when song has artist and title.
+			Calls self.save_lyrics to save them.
 
 		"""
 
@@ -101,60 +104,35 @@ class Song():
 			print('Lyrics already present.')
 			return
 
-		try:
-			print('\nDownloading lyrics for:', self.artist, '-', self.title)
-			print('URL -', self.lyrics_wikia_url)
+		# At this point there is nothing in self.error
+		print('\nDownloading:', self.artist, '-', self.title)
 
-			response = urlopen(self.lyrics_wikia_url)
-			html = response.read()
-			soup = BeautifulSoup(html, 'html.parser')
+		donwload_from_lyrics_wikia(self)
 
-			lyricbox = soup.find(class_='lyricbox')
+		# Only try other sources if required
 
-			if lyricbox:
+		if not self.lyrics:
+			donwload_from_lnm(self)
 
-				# remove script and div tags from the lyricbox(div)
-				junk = lyricbox.find_all(['script', 'div'])
-				for html_tag in junk:
-					html_tag.decompose()
-
-				# replace '<\br>' tags with newline characters
-				br_tags = lyricbox.find_all('br')
-
-				# loop over all <\br> tags and replace with newline characters
-				for html_tag in br_tags:
-					html_tag.replace_with('\n')
-
-				# lyrics are returned as unicode object
-				self.lyrics = lyricbox.get_text().strip()
-			else:
-				# lyricbox div absent if lyrics are not found
-				self.error = 'Lyrics not found. Check artist or title name.'
-
-		# Catch bad server response
-		except HTTPError as e:
-			## currently the bad requests return status code 404 and not html page without lyrics
-			self.error = e.reason + '. Check title or artist name.' + ' Error code:' + str(e.code) 
-
-		# catch all network errors
-		except URLError as e:
-			self.error = 'No network connectivity.'
-
-		# catch socket error. Can get because of bot sniffing or bad connectivity.
-		except socket.error as e:
-			if e.errno == 10054:
-				self.error = 'Socket Error 10054. Check network connectivity?'
-			else:
-				print(e)
+		if not self.lyrics:
+			donwload_from_azlyrics(self)
 
 		self.save_lyrics()
 
 	def save_lyrics(self):
-		"""
-		Called by self.download_lyrics to save lyrics according to
-		Config.save_to_file, Config.save_to_tag settings
 
 		"""
+			Called by self.download_lyrics to save lyrics according to
+			Config.save_to_file, Config.save_to_tag settings.
+
+			Handles the case if lyrics is not found. Logs errors to console
+			and Song object.
+
+		"""
+		
+		if not self.lyrics:
+			print('Failed:', self.error)
+			return
 
 		if self.lyrics and Config.save_to_file:
 			try:
@@ -231,9 +209,6 @@ class Song():
 				self.error = err_str
 				print('Failed:', err_str)
 
-		if not self.lyrics:
-			print('Failed:', self.error)
-
 	def download_required(self):
 		"""
 		Checks if a lyrics are required to be download.
@@ -274,7 +249,7 @@ class Song():
 		returns the log string of the song which is used in final log.
 
 		"""
-		template = '. \t{file}\t{tag}\t\t{song}\t\t{error}\n'
+		template = '. \t{file}\t{tag}\t{source}\t\t{song}\t\t{error}\n'
 		log = {}
 
 		# file_status and tag each have 4 possible values
@@ -315,6 +290,7 @@ class Song():
 
 		log['file'] = file_status
 		log['tag'] = tag
+		log['source'] = self.source
 
 		return template.format(**log)
 
@@ -325,13 +301,15 @@ class Song():
 			with open(os.path.join(Config.lyrics_dir, 'log.txt'), 'w', encoding='utf-8') as f:
 				log_date = strftime("%H:%M:%S  %d-%m-%y")
 
+				f.write('\t\t\t\tlyrico\n\n')
+
 				f.write('Log Date ' + log_date + '\n')
 				f.write('\n')
 
 				f.write('Audio files detected: ' + str(len(song_list)))
 				f.write('\n')
 
-				f.write('Metadata extracted for: ' + str(Song.valid_url_count))
+				f.write('Metadata extracted for: ' + str(Song.valid_metadata_count))
 				f.write('\n')
 
 				f.write('Lyrics files saved: ' + str(Song.lyrics_saved_to_file_count))
@@ -340,7 +318,7 @@ class Song():
 				f.write('Tags saved: ' + str(Song.lyrics_saved_to_tag_count))
 				f.write('\n\n')
 
-				table_header = '  \t[FILE]\t[TAG]\t\t\t[ARTIST-TITLE]\t\t\t\t[ERROR]\n'
+				table_header = '  \t[FILE]\t[TAG]\t[SOURCE]\t\t\t[ARTIST-TITLE]\t\t\t\t[ERROR]\n'
 				table_border = '='*100 + '\n'
 
 				f.write(table_header)
@@ -353,8 +331,8 @@ class Song():
 					f.write(song.get_log_string())
 					index_number += 1
 
-				# Add Key to log
-				f.write('\n\n\t**** KEY ****\n')
+				# Add STATUS KEY to log
+				f.write('\n\n\t**** STATUS KEY ****\n')
 
 				f.write("\t# 'Saved' - File or tag was saved successfully.")
 				f.write("\n")
@@ -367,6 +345,34 @@ class Song():
 
 				f.write("\t# 'Present' - Detected tag or file and skipped download as per 'overwrite' setting.")
 				f.write("\n")
+
+				# Add source key to log
+				f.write('\n\n\t**** SOURCE KEY  ****\n')
+
+				f.write("\t# 'WIKI' - Lyric Wikia")
+				f.write("\n")
+
+				f.write("\t# 'LnM' - LYRICSnMUSIC")
+				f.write("\n")
+
+				f.write("\t# 'AZLr' - AZLyrics")
+				f.write("\n\n")
+
+				# Add credits
+				f.write("'lyrico' has been built and is maintained by Abhimanyu Pathania.")
+				f.write("\n\n")
+
+				f.write('If you encounter a bug, please raise an issue on GitHub.')
+				f.write("\n")
+
+				f.write('\thttps://github.com/abhimanyuPathania/lyrico/issues')
+				f.write("\n")
+
+				f.write('Or you can mail me: abpindia1944@gmail.com')
+				f.write("\n\n")
+
+				f.write('Cheers!')
+				f.write('\n\n\n\n')
 
 		except IOError as e:
 			print('Unable to build log.')

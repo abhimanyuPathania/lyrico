@@ -1,7 +1,7 @@
 
 """
-	This module simpley holds the keys used to extract data from
-	mutagens tags objects for the supported audio formats
+	This module only holds the keys used to extract data from
+	mutagen's tag objects for the supported audio formats.
 """
 
 from __future__ import print_function
