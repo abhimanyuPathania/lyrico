@@ -106,7 +106,7 @@ This is how an example first-run would look like on Windows.
 Other Settings and Commands
 =============================
 
-Basic settings like ``source_dir`` and ``lyrics_dir`` can be repeatedly changed using the ``set`` command as described in the example above. There are **three more settings** that are available to control ``lyrico``'s actions. These actions can be either disabled or enabled.
+Basic settings like ``source_dir`` and ``lyrics_dir`` can be repeatedly changed using the ``set`` command as described in the example above. There are few more settings that are available to control ``lyrico``'s actions. These actions can be either disabled or enabled.
 
 - ``save_to_file`` - When enabled, ``lyrico`` will save the lyrics downloaded to a text file and put it in the ``lyrics_dir``. The naming convention of file is as follows:
 
@@ -166,6 +166,38 @@ This gives following message in command prompt::
   
   However this won't work for the very first run.
 
+Lyrics Sources
+================
+``lyrico`` uses three popular sources from where it downloads the lyrics:
+
+1. `Lyric Wikia <http://lyrics.wikia.com/wiki/Lyrics_Wiki>`_ (``lyric_wikia``) - **enabled by default**
+
+2. `LYRICSnMUSIC <http://www.lyricsnmusic.com/>`_  (``lyrics_n_music``) - **enabled by default**
+
+3. `AZLyrics <http://www.azlyrics.com/>`_ (``az_lyrics``) - **disabled by default**
+
+The search order is same as enumerated above and cannot be changed. You can, however, disable or enable any of the sources using the same ``enable`` and ``disable`` commands. When a source is disabled, it is simply skipped during the search.
+
+For example, to enable AZLyrics::
+
+    lyrico enable az_lyrics
+
+Use the command line name for the source, which are mentioned in brackets after the source name. This logs the following message indicating that ``az_lyrics`` will be used as a source::
+
+    az_lyrics enabled
+    lyrico will use AZLyrics as a source for lyrics.
+
+Or to disable Lyric Wikia::
+
+    lyrico disable lyric_wikia:
+
+This logs the following message::
+
+    lyric_wikia disabled
+    lyrico will not use Lyric Wikia as a source for lyrics.
+
+The default settings for the sources perform best. Lyric Wikia has a huge collection of lyrics with songs from multiple languages. And LYRICSnMUSIC's search API is a bit flexible with the song's artist and title information. If ``lyrico`` cannot find lyrics from these two, they are probably not available or the song is too recent. Maybe trying on ``az_lyrics`` might work depending on how fast they update.
+
 Audio Formats and Tags
 =======================
 Below is the table of supported audio formats and their supported tags:
@@ -191,7 +223,7 @@ Here are somethings that ``lyrico`` does well:
 
 - **No junk** - ``lyrico`` will not insert junk text into your lyrics files or audio tags. It won't create blank files or blank lyrics tags. Neither it would create lyrics files or tags containing errors etc.
 
-- **Language** - Since ``lyrico`` uses your song's artist name and title to construct the lyrics.wikia URL; as long as they are correct and the wikia database has the lyrics, it would work no matter which language.
+- **Language** - Since ``lyrico`` uses your song's artist name and title to construct the URLs; so as long as they are correct and the source has the lyrics, it would work no matter which language.
 
 - **foobar2000** - The poor performance of the `Lyric Show Panel 3 <https://www.foobar2000.org/components/view/foo_uie_lyrics3>`_ component was main reason I wrote this application. It simply won't work for me. ``lyrico`` plays nicely with 'Lyric Show Panel'. ``lyrico``'s file-naming convention matches 'Lyric Show Panel's default settings. Just point 'Lyric Show Panel' to your ``lyrics_dir`` and done.
 
@@ -220,7 +252,7 @@ Here are few points you should know before using ``lyrico``:
     - ABC(acoustic)
     - ABC(live version)
   
-  the download will fail. Sometimes artist-name or title contain characters like '?'.  For this, Windows won't be able to create the text file as it is a restricted character. But the lyrics will be downloaded anyways and saved to tag if ``save_to_tag`` is enabled.
+  the download might fail. Sometimes artist-name or title contain characters like '?'.  For this, Windows won't be able to create the text file as it is a restricted character. But the lyrics will be downloaded anyways and saved to tag if ``save_to_tag`` is enabled.
 
 - **windows console** - If you are using Windows, like me, you must use some other font than the default 'raster fonts' in the command prompt to view in-prompt logging for songs using other characters than English in their metadata.
 
@@ -235,6 +267,8 @@ Dependencies
 
 - `glob2 <https://pypi.python.org/pypi/glob2>`_: to allow simple recursive directory search in Python 27.
 
+- `requests <https://pypi.python.org/pypi/requests>`_: HTTP for Humans.
+
 - `mutagen <https://pypi.python.org/pypi/mutagen>`_: to read tags from audio files and embed lyrics in tags for multiple audio formats.
 
 - `beautifulsoup4 <https://pypi.python.org/pypi/beautifulsoup4>`_: to extract the lyrics.
@@ -245,19 +279,16 @@ Dependencies
 - `docopt <https://pypi.python.org/pypi/docopt>`_: to create beautiful command-line interfaces.
 
 
-
 A note on mass downloading
 ===========================
 
-Since ``lyrico`` is simply scraping lyrics off the lyrics.wikia's HTML pages, please don't set ``source_dir`` to a folder having thousands of songs.
+Since ``lyrico`` is simply scraping lyrics off the HTML pages of the sources, please don't set ``source_dir`` to a folder having thousands of songs.
 
-They might ban your bot and ``lyrico`` does not use any masking. Also, it will be slow anyways since ``lyrico`` does not batch download. It sends requests one at a time. I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``. 
+They might ban your bot. Also, it will be slow since ``lyrico`` does not batch-download. It sends requests one at a time. I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``. 
 
 Changelog
 ==========
-
+- 0.4.0 Added LYRICSnMUSIC and AZLyrics as sources. Expanded the command line interface to control sources. Added `requests <https://pypi.python.org/pypi/requests>`_ to dependencies.
 - 0.3.0 Added support for ``OGG`` and ``wma`` audio formats. Replaced ``UNSYNCED LYRICS`` with ``LYRICS`` tags to embed lyrics in Vorbis Comments.
 - 0.2.0 Added documentation and tutorial.
 - 0.1.0 Initial release.
-
-

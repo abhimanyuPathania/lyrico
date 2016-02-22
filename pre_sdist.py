@@ -35,6 +35,9 @@ def reset_config():
 	config.set('actions', 'overwrite', 'False')
 	config.set('paths', 'source_dir', 'None')
 	config.set('paths', 'lyrics_dir', 'None')
+	config.set('sources', 'lyric_wikia', 'True')
+	config.set('sources', 'lyrics_n_music', 'True')
+	config.set('sources', 'az_lyrics', 'False')
 
 	# save to config.ini
 	with open(config_path, 'w') as configfile:

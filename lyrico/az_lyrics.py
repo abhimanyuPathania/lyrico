@@ -50,7 +50,7 @@ AZLyrics_CORRECTION = {
 
 
 
-def donwload_from_azlyrics(song):
+def donwload_from_az_lyrics(song):
 	
 	"""
 		Takes reference to the song object as input and

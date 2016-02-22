@@ -27,8 +27,8 @@ from .song import Song
 from .song_helper import get_song_list
 from .config import Config
 
-# testpypi 0.3.0
-__version__ = "0.3.0"
+# testpypi 0.4.0
+__version__ = "0.4.0"
 
 
 def main():
@@ -50,8 +50,6 @@ def main():
 	if not Config.is_loaded:
 		# Config not loaded due to exceptions. Error logged by exception handlers.
 		return
-
-	# return
 	
 	if args['--settings']:
 		# show current settings
@@ -71,7 +69,6 @@ def main():
 				Config.set_dir(args['<dir_type>'], args['<full_path_to_dir>'])
 			except Exception as e:
 				print(e)
-
 
 		if args['enable'] or args['disable']:
 			# setting 'save_to_file', 'save_to_tag' or 'overwrite'.
@@ -133,5 +130,3 @@ def main():
 		# Disable windows unicode console anyways
 		if platform.system() == 'Windows':
 			win_unicode_console.disable()
-
-

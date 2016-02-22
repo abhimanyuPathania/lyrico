@@ -33,7 +33,7 @@ from .build_requests import get_lyrico_headers
 request_headers = get_lyrico_headers()
 
 
-def donwload_from_lyrics_wikia(song):
+def donwload_from_lyric_wikia(song):
 	
 	"""
 		Takes reference to the song object as input and

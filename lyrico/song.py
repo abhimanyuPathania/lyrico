@@ -25,9 +25,9 @@ from mutagen.asf import ASFUnicodeAttribute
 from mutagen import MutagenError
 from bs4 import BeautifulSoup
 
-from .lyrics_wikia import donwload_from_lyrics_wikia
+from .lyric_wikia import donwload_from_lyric_wikia
 from .lyrics_n_music import donwload_from_lnm
-from .azlyrics import donwload_from_azlyrics
+from .az_lyrics import donwload_from_az_lyrics
 from .song_helper import get_song_data, get_song_list
 from .config import Config
 from .audio_format_keys import FORMAT_KEYS
@@ -107,15 +107,17 @@ class Song():
 		# At this point there is nothing in self.error
 		print('\nDownloading:', self.artist, '-', self.title)
 
-		donwload_from_lyrics_wikia(self)
+		# Use sources according to user settings
+		if Config.lyric_wikia:
+			donwload_from_lyric_wikia(self)
 
 		# Only try other sources if required
 
-		if not self.lyrics:
+		if not self.lyrics and Config.lyrics_n_music:
 			donwload_from_lnm(self)
 
-		if not self.lyrics:
-			donwload_from_azlyrics(self)
+		if not self.lyrics and Config.az_lyrics:
+			donwload_from_az_lyrics(self)
 
 		self.save_lyrics()
 

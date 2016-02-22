@@ -22,6 +22,18 @@ except ImportError:
 from .helper import get_config_path
 from .helper import BadConfigError
 
+# Maintian a dict of lyrico actions to check target on update_lyrico_actions()
+# Also save the corresponding section in 
+
+LYRICO_ACTIONS = {
+	'save_to_file': 'actions',
+	'save_to_tag': 'actions',
+	'overwrite': 'actions',
+
+	'lyric_wikia': 'sources',
+	'lyrics_n_music': 'sources',
+	'az_lyrics': 'sources'
+}
 
 class Config():
 	
@@ -98,7 +110,14 @@ class Config():
 
 			Config.overwrite = conf.getboolean('actions', 'overwrite')
 
-			
+			Config.lyric_wikia = conf.getboolean('sources', 'lyric_wikia')
+			Config.lyrics_n_music = conf.getboolean('sources', 'lyrics_n_music')
+			Config.az_lyrics = conf.getboolean('sources', 'az_lyrics')
+
+			# if user disables all sources. Notify & force user to enable one.
+			if (not Config.lyric_wikia and not Config.lyrics_n_music and not Config.az_lyrics) and check_config:
+				raise BadConfigError(3, 'Bad Config')
+
 			# Loading this with user config, we need to call the load_config only once at start.
 			Config.lyric_files_in_dir = glob2.glob(os.path.join(Config.lyrics_dir, '**/*.txt'))
 
@@ -124,6 +143,11 @@ class Config():
 				print('use "lyrico --help" to view commands.')
 				Config.show_settings()
 
+			if e.errno == 3:
+				print('All lyrics sources are disabled. Please enable one.')
+				print('use "lyrico --help" to view commands.')
+				Config.show_settings()
+
 		# Catch all config parser errors
 		except BaseConfigParserError as e:
 			print('Unable to load config.')
@@ -136,11 +160,13 @@ class Config():
 
 	@staticmethod
 	def set_dir(dir_type, path):
+
 		"""
 			Takes an absolute path as saves it as 'source_dir' or 'lyrics_dir'
 			in config.ini.
 			path is user input from the cmdline.
 		"""
+
 		if dir_type != 'source_dir' and dir_type != 'lyrics_dir':
 			print('Invalid "dir_type". Only "source_dir" or "lyrics_dir" are valid types.')
 			print('You gave "dir_type":', dir_type)
@@ -183,9 +209,11 @@ class Config():
 
 	@staticmethod
 	def update_lyrico_actions(target, update_type):
-		if target != 'save_to_file' and target != 'save_to_tag' and target != 'overwrite':
+		# if target != 'save_to_file' and target != 'save_to_tag' and target != 'overwrite':
+		if target not in LYRICO_ACTIONS:
 			print('Invalid lyrico action change attempted')
 			print('''"save_to_file", "save_to_tag" and "overwrite" are the only settings that can be enabled or disabled.''')
+			print('''"lyric_wikia", "lyrics_n_music" and "az_lyrics" are the only sources that can be enabled or disabled.''')
 			print('You attempted to change:', target)
 			print('use "lyrico --help" to view commands.')
 			return 
@@ -193,7 +221,7 @@ class Config():
 		value = 'True' if update_type == 'enable' else 'False'
 		log_str = '' if update_type == 'enable' else 'not '
 		
-		saved = Config.save_config_to_file('actions', target, value)
+		saved = Config.save_config_to_file(LYRICO_ACTIONS[target], target, value)
 		# save_config_to_file returns False on catching excepions
 		if not saved:
 			# If updating config file fails for some reason, don't print success log.
@@ -210,6 +238,12 @@ class Config():
 				print('lyrico will detect the songs that already have lyrics, and will ignore them.')
 			else:
 				print('''lyrico will download lyrics for all songs detected in "source_dir" and overwrite lyrics if already present.''')
+		if target == 'lyric_wikia':
+			print('lyrico will %suse Lyric Wikia as a source for lyrics.' % log_str)
+		if target == 'lyrics_n_music':
+			print('lyrico will %suse LYRICSnMUSIC as a source for lyrics.' % log_str)
+		if target == 'az_lyrics':
+			print('lyrico will %suse AZLyrics as a source for lyrics.' % log_str)
 
 	@staticmethod
 	def show_settings():
@@ -219,8 +253,10 @@ class Config():
 		for section in Config.conf.sections():
 			# for each section get list items.
 			# items are returned as list of tuples of type (key, value)
+			print(section.upper())
 			for item in Config.conf.items(section):
 				print('   ', item[0], '=', item[1])
+			print('\n')
 
 	@staticmethod
 	def save_config_to_file(section, key, value):

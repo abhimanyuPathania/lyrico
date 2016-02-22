@@ -48,27 +48,3 @@ def sanitize_data(s):
 	s = re.sub(r'\s+', ' ', s)
 
 	return s
-
-# def get_wikia_url(artist, title):
-	
-# 	try:
-# 		from urllib.parse  import quote
-# 	except ImportError:
-# 		# Python27
-# 		from urllib import quote
-
-# 	# replace spaces with underscores. This prints nicer URLs in log.
-# 	# (wikia's URL router converts spaces to underscores)
-# 	artist = artist.replace(' ', '_')
-# 	title = title.replace(' ', '_')
-
-# 	# For calling 'quote' in Python27, artist and title unicode objects
-# 	# must be encoded. Choosing 'utf-8', since used by wikia and most browsers to encode URLs.
-# 	if sys.version_info[0] < 3:
-# 		artist = artist.encode('utf-8')
-# 		title = title.encode('utf-8')
-
-# 	# Call quote to encode other characters.
-# 	lyrics_wikia_url = 'http://lyrics.wikia.com/wiki/%s:%s' % (quote(artist), quote(title))
-
-# 	return lyrics_wikia_url
