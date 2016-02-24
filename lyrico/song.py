@@ -5,21 +5,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-try:
-    # For Python 3.0 and later
-    from urllib.request import urlopen
-    from urllib.error import HTTPError, URLError
-
-except ImportError:
-    # Fall back to Python 2's urllib2
-    from urllib2 import urlopen
-    from urllib2 import HTTPError, URLError
-
+import time
 import sys
 import os
-import socket
 
-from time import strftime
 from mutagen.id3 import USLT
 from mutagen.asf import ASFUnicodeAttribute
 from mutagen import MutagenError
@@ -300,9 +289,10 @@ class Song():
 	def log_results(song_list):
 
 		try:
-			with open(os.path.join(Config.lyrics_dir, 'log.txt'), 'w', encoding='utf-8') as f:
-				log_date = strftime("%H:%M:%S  %d-%m-%y")
-
+			log_date = time.strftime("%H:%M:%S  %d/%m/%y")
+			log_file_name = 'log.txt'
+			with open(os.path.join(Config.lyrics_dir, log_file_name), 'w', encoding='utf-8') as f:
+				
 				f.write('\t\t\t\tlyrico\n\n')
 
 				f.write('Log Date ' + log_date + '\n')

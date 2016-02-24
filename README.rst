@@ -12,11 +12,11 @@ lyrico
 Support
 =========
 
- **Audio Formats** - mp3, flac, m4a, mp4, wma, OGG (Vorbis and FLAC).
+- **Audio Formats** - mp3, flac, m4a, mp4, wma, OGG (Vorbis and FLAC).
 
- **Python** - Python 27 and Python 3 (tested on Python 3.5 Python 3.4)
+- **Python** - Python 27 and Python 3 (tested on Python 3.5 Python 3.4)
 
- **OS** - Windows, Linux (tested on Ubuntu).
+- **OS** - Windows, Linux (tested on Ubuntu).
 
 
 Installation
@@ -54,7 +54,7 @@ If you see an error like ``ImportError: No module named mutagen.id3``, this mean
 
     pip install -r requirements.txt
 
- This will install all of the ``lyrico``'s dependencies and now you can try testing with the 'lyrico' command. It should give no errors.
+   This will install all of the ``lyrico``'s dependencies and now you can try testing with the 'lyrico' command. It should give no errors.
 
 
 Running ``lyrico``
@@ -248,10 +248,15 @@ Here are few points you should know before using ``lyrico``:
 
   This has never caused any problem for me till date. And from my understanding you should be using ID3v2.4 tags anyways. I have used ``lyrico`` on hundreds of mp3 files and had no issues. You can always test ``lyrico`` on few songs and check. Or you can just disable ``save_to_tag``.
 
-- **Song titles** - lyrics are fetched using a URL generated using song's artist name and title. This means that if the song has titles like:
-    - ABC(acoustic)
-    - ABC(live version)
+- **Song metadata** - Lyrics are fetched using a URL generated using song's artist name and title. This means that if the song has titles like:
+
+  - ABC(acoustic)
+  - ABC(live version)
   
+  or an artist like:
+
+  - XYZ(feat. Blah)
+
   the download might fail. Sometimes artist-name or title contain characters like '?'.  For this, Windows won't be able to create the text file as it is a restricted character. But the lyrics will be downloaded anyways and saved to tag if ``save_to_tag`` is enabled.
 
 - **windows console** - If you are using Windows, like me, you must use some other font than the default 'raster fonts' in the command prompt to view in-prompt logging for songs using other characters than English in their metadata.
@@ -288,6 +293,8 @@ They might ban your bot. Also, it will be slow since ``lyrico`` does not batch-d
 
 Changelog
 ==========
+
+- 0.4.1 Minor bug fixes.
 - 0.4.0 Added LYRICSnMUSIC and AZLyrics as sources. Expanded the command line interface to control sources. Added `requests <https://pypi.python.org/pypi/requests>`_ to dependencies.
 - 0.3.0 Added support for ``OGG`` and ``wma`` audio formats. Replaced ``UNSYNCED LYRICS`` with ``LYRICS`` tags to embed lyrics in Vorbis Comments.
 - 0.2.0 Added documentation and tutorial.

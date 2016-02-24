@@ -45,13 +45,6 @@ def donwload_from_lyric_wikia(song):
 	# temp var to hold value for final checking
 	lyrics = None
 
-	# Redundant value checking. This function cannot be called without either of
-	# artist, title present. To be removed after testing.
-	if not song.artist or not song.title:
-		if not song.error:
-			# Same as added by get_song_data
-			song.error = 'Artist name or song title not found.'
-		return
 
 	# replace spaces with underscores. This prints nicer URLs in log.
 	# (wikia's URL router converts spaces to underscores). '%20' work fine as well.
@@ -85,6 +78,7 @@ def donwload_from_lyric_wikia(song):
 
 		res = requests.get(lyrics_wikia_url, headers = request_headers)
 		res.raise_for_status()
+		
 	# Catch network errors
 	except (ConnectionError, Timeout):
 		song.error = 'No network connectivity.'

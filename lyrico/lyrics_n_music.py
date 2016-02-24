@@ -45,14 +45,6 @@ def donwload_from_lnm(song):
 	# temp var to hold value for final checking
 	lyrics = None
 
-	# Redundant value checking. This function cannot be called without either of
-	# artist, title present. To be removed after testing.
-	if not song.artist or not song.title:
-		if not song.error:
-			# Same as added by get_song_data
-			song.error = 'Artist name or song title not found.'
-		return
-
 	
 	# Build the initial JSON request data
 	data = {

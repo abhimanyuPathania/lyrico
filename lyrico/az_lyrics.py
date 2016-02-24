@@ -25,12 +25,6 @@ import re
 import sys
 import requests
 
-try:
-	from urllib.parse  import quote
-except ImportError:
-	# Python27
-	from urllib import quote
-
 from requests import ConnectionError, HTTPError, Timeout
 from bs4 import BeautifulSoup
 
@@ -41,14 +35,11 @@ from .build_requests import get_lyrico_headers
 # per lyrico operation and not a new profile per each download in an operation.
 request_headers = get_lyrico_headers()
 
-
 # Holds corerction for Artist names
 # key(artist name built from our song metadata): value(corresponding value used by AZLyrics)
 AZLyrics_CORRECTION = {
 	'the': 'thethe'
 }
-
-
 
 def donwload_from_az_lyrics(song):
 	
@@ -63,19 +54,10 @@ def donwload_from_az_lyrics(song):
 	lyrics = None
 
 	# Assume this won't work. Be a realist. 
-	error = 'Artist name or song title not found.'
-
-	# Redundant value checking. This function cannot be called without either of
-	# artist, title present. To be removed after testing.
-	if not song.artist or not song.title:
-		if not song.error:
-			# Same as added by get_song_data
-			song.error = 'Artist name or song title not found.'
-		return
+	error = 'Lyrics not found. Check artist or title name.'
 
 	artist = song.artist
 	title = song.title
-
 
 	# This looks for 'The' followed by a 'space' which is followed by any non-space(\s) char.
 	# Caret(^) forces to find it only from beginning
@@ -111,6 +93,12 @@ def donwload_from_az_lyrics(song):
 
 		res = requests.get(azlyrics_url, headers = request_headers)
 		res.raise_for_status()
+		# 'requests' was guessing the encoding from azlyrics as ISO-8859-1.
+		# AZLyrics sends 'UTF-8' in its meta tag
+
+		# Force request to use 'UTF-8'. This is used when 'res.text' is read to get 'soup'
+		res.encoding = 'utf-8'
+
 	# Catch network errors
 	except (ConnectionError, Timeout):
 		error = 'No network connectivity.'
@@ -118,9 +106,9 @@ def donwload_from_az_lyrics(song):
 		# Already carrying error string
 		pass
 	
-	# No exceptions raised and the HTML for lyrics page was fetched		
+	# No exceptions raised and the HTML for lyrics was downloaded		
 	else:
-		soup = BeautifulSoup(res.text, 'html.parser')		
+		soup = BeautifulSoup(res.text, 'html.parser')
 		lyricsh = soup.find(class_='lyricsh')
 		siblings = lyricsh.find_next_siblings() if lyricsh else None
 
