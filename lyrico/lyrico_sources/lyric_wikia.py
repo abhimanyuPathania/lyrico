@@ -26,6 +26,7 @@ from requests import ConnectionError, HTTPError, Timeout
 from bs4 import BeautifulSoup
 
 from .build_requests import get_lyrico_headers
+from .lyrics_helper import test_lyrics
 
 
 # Defining 'request_headers' outside donwload function makes a single profile
@@ -108,14 +109,12 @@ def donwload_from_lyric_wikia(song):
 
 			# lyrics are returned as unicode object
 			lyrics = lyricbox.get_text().strip()
-		else:
-			# lyricbox div absent if lyrics are not found
-			song.error = 'Lyrics not found. Check artist or title name.'
 	
 	# Final check
-	if lyrics:
+	if test_lyrics(lyrics):
 		song.lyrics = lyrics
 		song.source = 'WIKI'
+		song.error = None
 	else:
 		# Don't overwrite and previous errors
 		if not song.error:

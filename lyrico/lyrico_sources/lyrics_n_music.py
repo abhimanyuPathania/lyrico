@@ -23,6 +23,7 @@ from requests import ConnectionError, HTTPError, Timeout
 from bs4 import BeautifulSoup
 
 from .build_requests import get_lyrico_headers, get_lnm_api_key
+from .lyrics_helper import test_lyrics
 
 
 base_lnm_url = 'http://api.lyricsnmusic.com/songs'
@@ -106,11 +107,10 @@ def donwload_from_lnm(song):
 		else:
 			song.error = 'Lyrics not found. Check artist or title name and retry.'
 
-	# Final checking. If lyrics not present, just assign the error string.
-	# result.lyrics is still None
-	if lyrics:
+	if test_lyrics(lyrics):
 		song.lyrics = lyrics
 		song.source = 'LnM'
+		song.error = None
 	else:
 		#don't overwrite any previous(connectivity) errors
 		if not song.error:

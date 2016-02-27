@@ -14,9 +14,13 @@ from mutagen.asf import ASFUnicodeAttribute
 from mutagen import MutagenError
 from bs4 import BeautifulSoup
 
-from .lyric_wikia import donwload_from_lyric_wikia
-from .lyrics_n_music import donwload_from_lnm
-from .az_lyrics import donwload_from_az_lyrics
+# Import all the sources modules
+from .lyrico_sources.lyric_wikia import donwload_from_lyric_wikia
+from .lyrico_sources.lyrics_n_music import donwload_from_lnm
+from .lyrico_sources.az_lyrics import donwload_from_az_lyrics
+from .lyrico_sources.musix_match import donwload_from_musix_match
+from .lyrico_sources.lyricsmode import donwload_from_lyricsmode
+
 from .song_helper import get_song_data, get_song_list
 from .config import Config
 from .audio_format_keys import FORMAT_KEYS
@@ -29,9 +33,8 @@ if sys.version_info[0] < 3:
     open = codecs.open
 
 
-
 class Song():
-	"""Container objects repersenting each globbed song in DIR"""
+	"""Container objects repersenting each song globbed from source_dir"""
 
 	# holds count for songs for valid metadata
 	valid_metadata_count = 0
@@ -104,6 +107,12 @@ class Song():
 
 		if not self.lyrics and Config.lyrics_n_music:
 			donwload_from_lnm(self)
+
+		if not self.lyrics and Config.musix_match:
+			donwload_from_musix_match(self)
+
+		if not self.lyrics and Config.lyricsmode:
+			donwload_from_lyricsmode(self)
 
 		if not self.lyrics and Config.az_lyrics:
 			donwload_from_az_lyrics(self)
@@ -347,10 +356,18 @@ class Song():
 				f.write("\t# 'LnM' - LYRICSnMUSIC")
 				f.write("\n")
 
+				f.write("\t# 'mXm' - musiXmatch")
+				f.write("\n")
+
+				f.write("\t# 'LrMOD' - LYRICSMODE")
+				f.write("\n")
+
 				f.write("\t# 'AZLr' - AZLyrics")
 				f.write("\n\n")
 
 				# Add credits
+				f.write(table_border)
+				
 				f.write("'lyrico' has been built and is maintained by Abhimanyu Pathania.")
 				f.write("\n\n")
 

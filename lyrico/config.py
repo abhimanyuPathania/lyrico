@@ -32,7 +32,18 @@ LYRICO_ACTIONS = {
 
 	'lyric_wikia': 'sources',
 	'lyrics_n_music': 'sources',
-	'az_lyrics': 'sources'
+	'musix_match': 'sources',
+	'lyricsmode' : 'sources',
+	'az_lyrics': 'sources',
+}
+
+# Used to print commandline logging for enable/disable sources 
+SOURCE_STR_MAP = {
+	'lyric_wikia' : 'Lyric Wikia',
+	'lyrics_n_music': 'LYRICSnMUSIC',
+	'musix_match': 'musiXmatch',
+	'lyricsmode': 'LYRICSMODE',
+	'az_lyrics': 'AZLyrics',
 }
 
 class Config():
@@ -110,12 +121,16 @@ class Config():
 
 			Config.overwrite = conf.getboolean('actions', 'overwrite')
 
+			# Load all the sources
 			Config.lyric_wikia = conf.getboolean('sources', 'lyric_wikia')
 			Config.lyrics_n_music = conf.getboolean('sources', 'lyrics_n_music')
+			Config.musix_match = conf.getboolean('sources', 'musix_match')
+			Config.lyricsmode = conf.getboolean('sources', 'lyricsmode')
 			Config.az_lyrics = conf.getboolean('sources', 'az_lyrics')
 
 			# if user disables all sources. Notify & force user to enable one.
-			if (not Config.lyric_wikia and not Config.lyrics_n_music and not Config.az_lyrics) and check_config:
+			if ((not Config.lyric_wikia and not Config.lyrics_n_music and 
+				not Config.az_lyrics and not Config.musix_match and not Config.lyricsmode) and check_config):
 				raise BadConfigError(3, 'Bad Config')
 
 			# Loading this with user config, we need to call the load_config only once at start.
@@ -209,15 +224,16 @@ class Config():
 
 	@staticmethod
 	def update_lyrico_actions(target, update_type):
-		# if target != 'save_to_file' and target != 'save_to_tag' and target != 'overwrite':
+
 		if target not in LYRICO_ACTIONS:
 			print('Invalid lyrico action change attempted')
 			print('''"save_to_file", "save_to_tag" and "overwrite" are the only settings that can be enabled or disabled.''')
-			print('''"lyric_wikia", "lyrics_n_music" and "az_lyrics" are the only sources that can be enabled or disabled.''')
+			print('''"lyric_wikia", "lyrics_n_music", "musix_match", "lyricsmode" and "az_lyrics" are the only sources that can be enabled or disabled.''')
 			print('You attempted to change:', target)
 			print('use "lyrico --help" to view commands.')
 			return 
 
+		# User is updating valid action/source
 		value = 'True' if update_type == 'enable' else 'False'
 		log_str = '' if update_type == 'enable' else 'not '
 		
@@ -229,21 +245,21 @@ class Config():
 			return
 
 		print(target, (update_type + 'd'))
+
 		if target == 'save_to_file':
 			print('lyrico will %ssave the downloaded lyrics to text files.' % log_str)
-		if target == 'save_to_tag':
+
+		elif target == 'save_to_tag':
 			print('lyrico will %sembed the downloaded lyrics into song tags.' % log_str)
-		if target == 'overwrite':
+
+		elif target == 'overwrite':
 			if update_type == 'disable':
 				print('lyrico will detect the songs that already have lyrics, and will ignore them.')
 			else:
 				print('''lyrico will download lyrics for all songs detected in "source_dir" and overwrite lyrics if already present.''')
-		if target == 'lyric_wikia':
-			print('lyrico will %suse Lyric Wikia as a source for lyrics.' % log_str)
-		if target == 'lyrics_n_music':
-			print('lyrico will %suse LYRICSnMUSIC as a source for lyrics.' % log_str)
-		if target == 'az_lyrics':
-			print('lyrico will %suse AZLyrics as a source for lyrics.' % log_str)
+		else:
+			# Action is to enable/disable a source.
+			print('lyrico will %suse %s as a source for lyrics.' % (log_str, SOURCE_STR_MAP[target]))
 
 	@staticmethod
 	def show_settings():

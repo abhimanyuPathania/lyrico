@@ -37,11 +37,23 @@ This would give the following output::
     use "lyrico --help" to view commands.
     Your current settings:
 
+    ACTIONS
         save_to_file = True
         save_to_tag = False
         overwrite = False
+
+
+    PATHS
         source_dir = None
         lyrics_dir = None
+
+
+    SOURCES
+        lyric_wikia = True
+        lyrics_n_music = True
+        musix_match = True
+        lyricsmode = True
+        az_lyrics = False
 
 If you get this screen, that means ``lyrico`` and its dependencies were installed correctly.
 
@@ -168,13 +180,17 @@ This gives following message in command prompt::
 
 Lyrics Sources
 ================
-``lyrico`` uses three popular sources from where it downloads the lyrics:
+``lyrico`` uses the following sources from where it downloads the lyrics:
 
-1. `Lyric Wikia <http://lyrics.wikia.com/wiki/Lyrics_Wiki>`_ (``lyric_wikia``) - **enabled by default**
+1. `Lyric Wikia <http://lyrics.wikia.com/wiki/Lyrics_Wiki>`_ : ``lyric_wikia``
 
-2. `LYRICSnMUSIC <http://www.lyricsnmusic.com/>`_  (``lyrics_n_music``) - **enabled by default**
+2. `LYRICSnMUSIC <http://www.lyricsnmusic.com/>`_ : ``lyrics_n_music``
 
-3. `AZLyrics <http://www.azlyrics.com/>`_ (``az_lyrics``) - **disabled by default**
+3. `musiXmatch <https://www.musixmatch.com/>`_ : ``musix_match``
+
+4. `LYRICSMODE <http://www.lyricsmode.com/>`_ : ``lyricsmode``
+
+5. `AZLyrics <http://www.azlyrics.com/>`_ : ``az_lyrics`` (**disabled by default**)
 
 The search order is same as enumerated above and cannot be changed. You can, however, disable or enable any of the sources using the same ``enable`` and ``disable`` commands. When a source is disabled, it is simply skipped during the search.
 
@@ -182,7 +198,7 @@ For example, to enable AZLyrics::
 
     lyrico enable az_lyrics
 
-Use the command line name for the source, which are mentioned in brackets after the source name. This logs the following message indicating that ``az_lyrics`` will be used as a source::
+Use the command line name for the source, which is mentioned after the link to the source in the above list. This logs the following message indicating that ``az_lyrics`` will be used as a source::
 
     az_lyrics enabled
     lyrico will use AZLyrics as a source for lyrics.
@@ -196,7 +212,6 @@ This logs the following message::
     lyric_wikia disabled
     lyrico will not use Lyric Wikia as a source for lyrics.
 
-The default settings for the sources perform best. Lyric Wikia has a huge collection of lyrics with songs from multiple languages. And LYRICSnMUSIC's search API is a bit flexible with the song's artist and title information. If ``lyrico`` cannot find lyrics from these two, they are probably not available or the song is too recent. Maybe trying on ``az_lyrics`` might work depending on how fast they update.
 
 Audio Formats and Tags
 =======================
@@ -289,12 +304,16 @@ A note on mass downloading
 
 Since ``lyrico`` is simply scraping lyrics off the HTML pages of the sources, please don't set ``source_dir`` to a folder having thousands of songs.
 
-They might ban your bot. Also, it will be slow since ``lyrico`` does not batch-download. It sends requests one at a time. I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``. 
+They might ban your bot. ``az_lyrics`` sometimes bans your IP (not sure if permanent) if you hit them with too many failed requests. Though, refreshing your IP by restarting your router or using a VPN solves that. Hence, ``az_lyrics`` as a source is disabled by default. Only use it if you are looking for recent lyrics.
+
+Also, downloading 1000s of lyrics will be slow since ``lyrico`` does not batch-download. It sends one request to one source at a time. This is by design.
+
+I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``. 
 
 Changelog
 ==========
 
-- 0.4.1 Minor bug fixes.
+- 0.5.0 Added musiXmatch and LYRICSMODE to sources. Include detection for licensing errors.
 - 0.4.0 Added LYRICSnMUSIC and AZLyrics as sources. Expanded the command line interface to control sources. Added `requests <https://pypi.python.org/pypi/requests>`_ to dependencies.
 - 0.3.0 Added support for ``OGG`` and ``wma`` audio formats. Replaced ``UNSYNCED LYRICS`` with ``LYRICS`` tags to embed lyrics in Vorbis Comments.
 - 0.2.0 Added documentation and tutorial.

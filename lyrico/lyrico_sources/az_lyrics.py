@@ -29,6 +29,7 @@ from requests import ConnectionError, HTTPError, Timeout
 from bs4 import BeautifulSoup
 
 from .build_requests import get_lyrico_headers
+from .lyrics_helper import test_lyrics
 
 
 # Defining 'request_headers' outside donwload function makes a single profile
@@ -100,7 +101,8 @@ def donwload_from_az_lyrics(song):
 		res.encoding = 'utf-8'
 
 	# Catch network errors
-	except (ConnectionError, Timeout):
+	except (ConnectionError, Timeout) as e:
+		print(e)
 		error = 'No network connectivity.'
 	except HTTPError:
 		# Already carrying error string
@@ -128,7 +130,7 @@ def donwload_from_az_lyrics(song):
 			    lyrics = raw_lyrics[0 : match.start()]
 			    
 	# Final check
-	if lyrics and lyrics.count('\n') >=2 :
+	if test_lyrics(lyrics):
 		song.lyrics = lyrics
 		song.error = None
 		song.source = 'AZLr'
