@@ -28,6 +28,7 @@ from requests import ConnectionError, HTTPError, Timeout
 from bs4 import BeautifulSoup
 
 from .build_requests import get_lyrico_headers
+from .lyrics_helper import test_lyrics
 
 # Defining 'request_headers' outside donwload function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
