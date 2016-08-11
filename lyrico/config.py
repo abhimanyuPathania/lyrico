@@ -67,7 +67,7 @@ class Config():
 	# This means that for 'wma' in this list, files with '.wma' and '.WMA' extensions 
 	# will be added to the list.
 
-	audio_formats = ['mp3', 'flac', 'm4a', 'mp4', 'OGG', 'wma']
+	audio_formats = ['[Mm][Pp]3', '[Ff][Ll][Aa][Cc]', '[Mm]4[Aa]', '[Mm][Pp]4', '[Oo][Gg][Gg]', '[Oo][Gg][Aa]', '[Ww][Mm][Aa]']
 
 	lyrics_dir = None
 	source_dir = None
