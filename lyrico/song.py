@@ -186,10 +186,10 @@ class Song():
 				# Both flac and OGG(Vorbis & FLAC), are being read/write as Vorbis Comments.
 				# Vorbis Comments don't have a standard 'lyrics' tag. The 'LYRICS' tag is 
 				# most common non-standard tag used for lyrics.
-				if self.format == 'flac' or self.format == 'OGG':
+				if self.format == 'flac' or self.format == 'ogg' or self.format == 'oga':
 					self.tag[lyrics_key] = self.lyrics
 
-				if self.format == 'wma' or self.format == 'WMA':
+				if self.format == 'wma':
 					# ASF Format uses ASFUnicodeAttribute objects instead of Python's Unicode
 					self.tag[lyrics_key] = ASFUnicodeAttribute(self.lyrics)
 

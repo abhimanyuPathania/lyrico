@@ -178,7 +178,7 @@ def get_song_data(path):
 	error = None
 
 	# format will the part of string after last '.' character
-	song_format = path[ path.rfind('.') + 1 : ]
+	song_format = path[ path.rfind('.') + 1 : ].lower
 
 
 	try:
