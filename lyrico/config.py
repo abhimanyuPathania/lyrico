@@ -198,13 +198,14 @@ class Config():
 
 		# make directory if user is setting "lyrics_dir" and it does not exists.
 		# Refer http://stackoverflow.com/a/14364249/2426469
-		try:
-			os.makedirs(path)
-			print('Directory does not exist. Creating new one.')
-		except OSError:
-			if not os.path.isdir(path):
-				# this exception is handled by function calling set_dir
-				raise
+		if dir_type == 'lyrics_dir':
+			try:
+				os.makedirs(path)
+				print('Directory does not exist. Creating new one.')
+			except OSError:
+				if not os.path.isdir(path):
+					# this exception is handled by function calling set_dir
+					raise
 		
 		saved = Config.save_config_to_file('paths', dir_type, path)
 		
