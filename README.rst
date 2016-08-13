@@ -8,6 +8,7 @@ lyrico
 - download the lyrics for each song
 - embed the lyrics downloaded into the song (as standard lyrics tag) and also save it to a text file
 
+Current version of ``lyrico`` downloads only **unsynced lyrics**.
 
 Support
 =========
@@ -176,7 +177,7 @@ This gives following message in command prompt::
     lyrico set source_dir full_path_to_source_dir
     lyrico
   
-  However this won't work for the very first run.
+  However this won't work for the very first run. When running ``lyrico`` for the first time after installation, the ``source_dir`` must be set explicitly using the ``set`` command.
 
 Lyrics Sources
 ================
