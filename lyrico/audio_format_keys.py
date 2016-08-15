@@ -39,6 +39,7 @@ FORMAT_KEYS = {
 
 	'flac': VORBIS_COMMENTS_KEYS,
 	'ogg' : VORBIS_COMMENTS_KEYS,
+	'oga' : VORBIS_COMMENTS_KEYS,
 
 	'wma' : {
 		'artist': 'Author',

@@ -85,7 +85,7 @@ def get_key(tag, key, format):
 			# Python3 is able to handle it internally due to implicit encoding(?)
 			data = tag.get(key)
 
-		if format == 'flac' or format == 'ogg':
+		if format == 'flac' or format == 'ogg' or format == 'oga':
 
 			if key == FORMAT_KEYS[format]['lyrics']:
 
@@ -146,7 +146,7 @@ def extract_ogg_tag(path):
 
 	if not ogg_tag:
 		# log error for user to see
-		error = 'Unable to read metadata from the .ogg file. Only Vorbis and FLAC are supported.'
+		error = 'Unable to read metadata from the .ogg/.oga file. Only Vorbis and FLAC are supported.'
 
 	return (ogg_tag, error)
 
@@ -192,7 +192,7 @@ def get_song_data(path):
 			tag = FLAC(path)
 		if song_format == 'wma':
 			tag = ASF(path)
-		if song_format == 'ogg':
+		if song_format == 'ogg' or song_format == 'oga':
 			tag, error = extract_ogg_tag(path)
 	except IOError:
 		error = 'Unable to locate the file. Could have been moved during operation.'

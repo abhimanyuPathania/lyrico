@@ -63,7 +63,7 @@ class Config():
 	# Audio formats supported are not loaded from config.ini
 
 	# This list is used by the 'glob2' module to scan 'source_dir' for audio files.
-	audio_formats = ['mp3', 'flac', 'm4a', 'mp4', 'ogg', 'wma']
+	audio_formats = ['mp3', 'flac', 'm4a', 'mp4', 'ogg', 'oga', 'wma']
 
 	lyrics_dir = None
 	source_dir = None

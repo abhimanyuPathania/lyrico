@@ -183,10 +183,10 @@ class Song():
 						lyrics_key = lyrics_key.encode('latin-1')
 					self.tag[lyrics_key] = self.lyrics
 
-				# Both flac and ogg(Vorbis & FLAC), are being read/write as Vorbis Comments.
+				# Both flac and ogg/oga(Vorbis & FLAC), are being read/write as Vorbis Comments.
 				# Vorbis Comments don't have a standard 'lyrics' tag. The 'LYRICS' tag is 
 				# most common non-standard tag used for lyrics.
-				if self.format == 'flac' or self.format == 'ogg':
+				if self.format == 'flac' or self.format == 'ogg' or self.format == 'oga':
 					self.tag[lyrics_key] = self.lyrics
 
 				if self.format == 'wma':
