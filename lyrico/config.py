@@ -63,11 +63,7 @@ class Config():
 	# Audio formats supported are not loaded from config.ini
 
 	# This list is used by the 'glob2' module to scan 'source_dir' for audio files.
-	# 'glob2' detects extensions for Upper/Lower cases.
-	# This means that for 'wma' in this list, files with '.wma' and '.WMA' extensions 
-	# will be added to the list.
-
-	audio_formats = ['mp3', 'flac', 'm4a', 'mp4', 'OGG', 'wma']
+	audio_formats = ['mp3', 'flac', 'm4a', 'mp4', 'ogg', 'wma']
 
 	lyrics_dir = None
 	source_dir = None

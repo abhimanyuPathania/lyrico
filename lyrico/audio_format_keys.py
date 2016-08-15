@@ -22,13 +22,6 @@ MP4_KEYS = {
 	'lyrics':'\xa9lyr'
 }
 
-WMA_KEYS = {
-	'artist': 'Author',
-	'title': 'Title',
-	'album':'WM/AlbumTitle',
-	'lyrics':'WM/Lyrics'
-}
-
 
 
 FORMAT_KEYS = {
@@ -45,10 +38,14 @@ FORMAT_KEYS = {
 	'm4a' : MP4_KEYS,
 
 	'flac': VORBIS_COMMENTS_KEYS,
-	'OGG' : VORBIS_COMMENTS_KEYS,
+	'ogg' : VORBIS_COMMENTS_KEYS,
 
-	'WMA' : WMA_KEYS,
-	'wma' : WMA_KEYS
+	'wma' : {
+		'artist': 'Author',
+		'title': 'Title',
+		'album':'WM/AlbumTitle',
+		'lyrics':'WM/Lyrics'
+	}
 }
 
 

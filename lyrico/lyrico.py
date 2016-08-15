@@ -106,7 +106,6 @@ def main():
 		song_list = [Song(song_path) for song_path in get_song_list(Config.source_dir)]
 		print(len(song_list), 'songs detected.')
 		print('Metadata extracted for', (str(Song.valid_metadata_count) + '/' + str(len(song_list))), 'songs.')
-
 		for song in song_list:
 			# Only download lyrics if 'title' and 'artist' is present
 			# Error str is already present in song.error

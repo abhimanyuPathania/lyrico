@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 import sys
 import os
 import glob2
+import platform
 
 try:
 	from urllib.parse  import quote
@@ -41,7 +42,7 @@ def get_key(tag, key, format):
 	if not tag:
 		return result
 
-	# extra keys to read from FLAC and OGG formats
+	# extra keys to read from FLAC and ogg formats
 	lyrics_keys = ['LYRICS', 'UNSYNCEDLYRICS', 'UNSYNCED LYRICS', 'SYNCED LYRICS']
 
 	if format == 'mp3':
@@ -58,7 +59,7 @@ def get_key(tag, key, format):
 			# so we look one list deeper
 			result = data[0].text[0]
 
-	elif format == 'wma' or format == 'WMA':
+	elif format == 'wma':
 		# For ASF Frames key lookups are lists containing ASFUnicodeAttribute type
 		# type objects instead of Unicode objects
 		data = tag.get(key)
@@ -66,7 +67,7 @@ def get_key(tag, key, format):
 		# Safely extract the Unicode 'value' from ASFUnicodeAttribute object
 		result = tag.get(key)[0].value if data else None
 	else:
-		# mp4, m4a, flac, OGG
+		# mp4, m4a, flac, ogg
 
 		# For all these formats, the data object is a simple dictionary 
 		# with keys mapping to lists.
@@ -84,7 +85,7 @@ def get_key(tag, key, format):
 			# Python3 is able to handle it internally due to implicit encoding(?)
 			data = tag.get(key)
 
-		if format == 'flac' or format == 'OGG':
+		if format == 'flac' or format == 'ogg':
 
 			if key == FORMAT_KEYS[format]['lyrics']:
 
@@ -93,7 +94,7 @@ def get_key(tag, key, format):
 				# Loop through different keys to look for lyrics.
 
 				# 'LYRICS' will be used as standard for 'lyrico' for Vorbis Comments
-				# This includes .flac, .OGG(Vorbis and FLAC) files
+				# This includes .flac, .ogg(Vorbis and FLAC) files
 				for lr_key in lyrics_keys:
 					# also try lowercases
 					data = tag.get(lr_key) or tag.get(lr_key.lower())
@@ -105,7 +106,7 @@ def get_key(tag, key, format):
 				# Normal lookup for other properties
 				data = tag.get(key)
 
-		# till here the data ( for mp4, m4a, flac, OGG) will be a list 
+		# till here the data ( for mp4, m4a, flac, ogg) will be a list 
 		# containing the value or None. Safely lookup in list
 		result = data[0] if data else None
 
@@ -116,7 +117,7 @@ def get_key(tag, key, format):
 def extract_ogg_tag(path):
 	
 	"""
-		Read tags out of .OGG files encoded with different codecs
+		Read tags out of .ogg files encoded with different codecs
 		Returns a tuple (tag, error)
 	"""
 	ogg_tag = None
@@ -127,7 +128,7 @@ def extract_ogg_tag(path):
 
 	if not ogg_tag:		
 		try:
-			# Try to read OGG-Vorbis files
+			# Try to read ogg-Vorbis files
 			ogg_tag = OggVorbis(path)
 
 		except Exception:
@@ -136,7 +137,7 @@ def extract_ogg_tag(path):
 
 	if not ogg_tag:		
 		try:
-			# Try to read OGG-FLAC files
+			# Try to read ogg-FLAC files
 			ogg_tag = OggFLAC(path)
 
 		except Exception:
@@ -145,7 +146,7 @@ def extract_ogg_tag(path):
 
 	if not ogg_tag:
 		# log error for user to see
-		error = 'Unable to read metadata from the .OGG file. Only Vorbis and FLAC are supported.'
+		error = 'Unable to read metadata from the .ogg file. Only Vorbis and FLAC are supported.'
 
 	return (ogg_tag, error)
 
@@ -178,7 +179,8 @@ def get_song_data(path):
 	error = None
 
 	# format will the part of string after last '.' character
-	song_format = path[ path.rfind('.') + 1 : ]
+	# only use lowercase for formats
+	song_format = path[ path.rfind('.') + 1 : ].lower()
 
 
 	try:
@@ -188,9 +190,9 @@ def get_song_data(path):
 			tag = MP4(path)
 		if song_format == 'flac':
 			tag = FLAC(path)
-		if song_format == 'wma' or song_format == 'WMA':
+		if song_format == 'wma':
 			tag = ASF(path)
-		if song_format == 'OGG':
+		if song_format == 'ogg':
 			tag, error = extract_ogg_tag(path)
 	except IOError:
 		error = 'Unable to locate the file. Could have been moved during operation.'
@@ -255,6 +257,15 @@ def get_song_list(path):
 
 	for ext in Config.audio_formats:
 		pattern = '**/*.' + ext
+		pattern_uppercase = '**/*.' + ext.upper()
+
 		song_list.extend(glob2.glob(os.path.join(path, pattern)))
+
+		# Windows is case-insensitive towards extensions. So the glob2 module detects
+		# ex. .ogg and .OGG as well. But in Linux the extensions are case-sensitive.
+
+		# Add detection for uppercase extensions
+		if platform.system() == 'Linux':
+			song_list.extend(glob2.glob(os.path.join(path, pattern_uppercase)))
 
 	return song_list
