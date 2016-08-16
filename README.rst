@@ -8,12 +8,12 @@ lyrico
 - download the lyrics for each song
 - embed the lyrics downloaded into the song (as standard lyrics tag) and also save it to a text file
 
-Current version of ``lyrico`` downloads only **unsynced lyrics**.
+Current version of ``lyrico`` supports only **unsynced lyrics**.
 
 Support
 =========
 
-- **Audio Formats** - mp3, flac, m4a, mp4, wma, OGG (Vorbis and FLAC).
+- **Audio Formats** - mp3, flac, m4a, mp4, wma, ogg/oga (Vorbis and FLAC).
 
 - **Python** - Python 27 and Python 3 (tested on Python 3.5 Python 3.4)
 
@@ -229,7 +229,7 @@ Below is the table of supported audio formats and their supported tags:
 +--------------------------------------------+----------------------------------------------+
 | wma                                        | ASF                                          |
 +--------------------------------------------+----------------------------------------------+
-| OGG (Vorbis and FLAC)                      | Vorbis Comments                              |
+| ogg, oga                                   | Vorbis Comments                              |
 +--------------------------------------------+----------------------------------------------+
 
 ``lyrico`` goodness
@@ -313,9 +313,9 @@ I personally use it at one or two albums at time and keep checking for any error
 
 Changelog
 ==========
-
+- 0.6.0 Added support for ``oga`` audio format. Detect uppercase extensions in Linux.
 - 0.5.0 Added musiXmatch and LYRICSMODE to sources. Include detection for licensing errors.
 - 0.4.0 Added LYRICSnMUSIC and AZLyrics as sources. Expanded the command line interface to control sources. Added `requests <https://pypi.python.org/pypi/requests>`_ to dependencies.
-- 0.3.0 Added support for ``OGG`` and ``wma`` audio formats. Replaced ``UNSYNCED LYRICS`` with ``LYRICS`` tags to embed lyrics in Vorbis Comments.
+- 0.3.0 Added support for ``ogg`` and ``wma`` audio formats. Replaced ``UNSYNCED LYRICS`` with ``LYRICS`` tags to embed lyrics in Vorbis Comments.
 - 0.2.0 Added documentation and tutorial.
 - 0.1.0 Initial release.
