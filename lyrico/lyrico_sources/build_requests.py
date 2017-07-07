@@ -24,31 +24,6 @@ request_headers = {
 	'DNT': '1',	
 }
 
-lnm_api_keys = [
-	'5442d9796271ea7baf837dfb2bfb4c',
-	'ccae79268ebd14d14df857b203e029',
-	'5f7f6670358b899f4b6c69f61bd80c',
-	'1ddd0fc509738936c81f61451bad1b',
-	'867d86fe3d85f2dfea8a23a790863d',
-	'a096049a914d27dc189f26b6d3777d',
-	'881954ca4ae494d6f2030166158405',
-	'fbeb6447d7b6e00dad7f1d98c305dc',
-	'62bdc7f79844d6784cbf95cfa8ac6d',
-	'957db35ac62f27b3312c5f6d8e81c7',
-	'42969bb4db5edc7559819e7d8ff79c',
-	'4eebd7b17388e32801dbd4a9136f05',
-	'4d9ced669ed8d4f12b89857a9b047f',
-	'eea4287ca87fb410fd2bff2d29f79c',
-	'9be4b31867583ddc6daaf56dd83849',
-	'2b8a4dbaa9b0d95652e33c1d1b32b6',
-	'54abc1914ec3ef13d47b2ab522a9dd',
-	'2d4c33d93333756dc18a1ab8ea6350',
-	'911f4bd4c332a6462865888836615a',
-	'7da59aae94b735702e9aba32d50b00',
-	'f7b366b1270cca982ea06c6a316d58',
-	'13a0fd2d15321938ade087088c9ba8'
-]
-
 # randint inculdes both upper and lower bounds
 
 def get_lyrico_headers(site_name=None):
@@ -60,9 +35,6 @@ def get_lyrico_headers(site_name=None):
 	headers_copy = copy.deepcopy(request_headers)
 	headers_copy['User-Agent'] = user_agents[random.randint(0, (len(user_agents) - 1))]
 	return headers_copy
-
-def get_lnm_api_key():
-	return lnm_api_keys[random.randint( 0, (len(lnm_api_keys) - 1))]
 
 def test_req_dic():
 	print(request_headers)

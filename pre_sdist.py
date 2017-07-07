@@ -38,7 +38,6 @@ def reset_config():
 	config.set('paths', 'lyrics_dir', 'None')
 
 	config.set('sources', 'lyric_wikia', 'True')
-	config.set('sources', 'lyrics_n_music', 'True')
 	config.set('sources', 'musix_match', 'True')
 	config.set('sources', 'lyricsmode', 'True')
 	config.set('sources', 'az_lyrics', 'False')
