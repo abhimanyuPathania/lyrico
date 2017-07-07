@@ -31,7 +31,6 @@ LYRICO_ACTIONS = {
 	'overwrite': 'actions',
 
 	'lyric_wikia': 'sources',
-	'lyrics_n_music': 'sources',
 	'musix_match': 'sources',
 	'lyricsmode' : 'sources',
 	'az_lyrics': 'sources',
@@ -40,7 +39,6 @@ LYRICO_ACTIONS = {
 # Used to print commandline logging for enable/disable sources 
 SOURCE_STR_MAP = {
 	'lyric_wikia' : 'Lyric Wikia',
-	'lyrics_n_music': 'LYRICSnMUSIC',
 	'musix_match': 'musiXmatch',
 	'lyricsmode': 'LYRICSMODE',
 	'az_lyrics': 'AZLyrics',
@@ -119,13 +117,12 @@ class Config():
 
 			# Load all the sources
 			Config.lyric_wikia = conf.getboolean('sources', 'lyric_wikia')
-			Config.lyrics_n_music = conf.getboolean('sources', 'lyrics_n_music')
 			Config.musix_match = conf.getboolean('sources', 'musix_match')
 			Config.lyricsmode = conf.getboolean('sources', 'lyricsmode')
 			Config.az_lyrics = conf.getboolean('sources', 'az_lyrics')
 
 			# if user disables all sources. Notify & force user to enable one.
-			if ((not Config.lyric_wikia and not Config.lyrics_n_music and 
+			if ((not Config.lyric_wikia and
 				not Config.az_lyrics and not Config.musix_match and not Config.lyricsmode) and check_config):
 				raise BadConfigError(3, 'Bad Config')
 
@@ -225,7 +222,7 @@ class Config():
 		if target not in LYRICO_ACTIONS:
 			print('Invalid lyrico action change attempted')
 			print('''"save_to_file", "save_to_tag" and "overwrite" are the only settings that can be enabled or disabled.''')
-			print('''"lyric_wikia", "lyrics_n_music", "musix_match", "lyricsmode" and "az_lyrics" are the only sources that can be enabled or disabled.''')
+			print('''"lyric_wikia", "musix_match", "lyricsmode" and "az_lyrics" are the only sources that can be enabled or disabled.''')
 			print('You attempted to change:', target)
 			print('use "lyrico --help" to view commands.')
 			return 

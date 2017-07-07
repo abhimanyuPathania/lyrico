@@ -16,7 +16,6 @@ from bs4 import BeautifulSoup
 
 # Import all the sources modules
 from .lyrico_sources.lyric_wikia import donwload_from_lyric_wikia
-from .lyrico_sources.lyrics_n_music import donwload_from_lnm
 from .lyrico_sources.az_lyrics import donwload_from_az_lyrics
 from .lyrico_sources.musix_match import donwload_from_musix_match
 from .lyrico_sources.lyricsmode import donwload_from_lyricsmode
@@ -104,9 +103,6 @@ class Song():
 			donwload_from_lyric_wikia(self)
 
 		# Only try other sources if required
-
-		if not self.lyrics and Config.lyrics_n_music:
-			donwload_from_lnm(self)
 
 		if not self.lyrics and Config.musix_match:
 			donwload_from_musix_match(self)
@@ -351,9 +347,6 @@ class Song():
 				f.write('\n\n\t**** SOURCE KEY  ****\n')
 
 				f.write("\t# 'WIKI' - Lyric Wikia")
-				f.write("\n")
-
-				f.write("\t# 'LnM' - LYRICSnMUSIC")
 				f.write("\n")
 
 				f.write("\t# 'mXm' - musiXmatch")

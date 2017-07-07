@@ -51,7 +51,6 @@ This would give the following output::
 
     SOURCES
         lyric_wikia = True
-        lyrics_n_music = True
         musix_match = True
         lyricsmode = True
         az_lyrics = False
@@ -185,13 +184,11 @@ Lyrics Sources
 
 1. `Lyric Wikia <http://lyrics.wikia.com/wiki/Lyrics_Wiki>`_ : ``lyric_wikia``
 
-2. `LYRICSnMUSIC <http://www.lyricsnmusic.com/>`_ : ``lyrics_n_music``
+2. `musiXmatch <https://www.musixmatch.com/>`_ : ``musix_match``
 
-3. `musiXmatch <https://www.musixmatch.com/>`_ : ``musix_match``
+3. `LYRICSMODE <http://www.lyricsmode.com/>`_ : ``lyricsmode``
 
-4. `LYRICSMODE <http://www.lyricsmode.com/>`_ : ``lyricsmode``
-
-5. `AZLyrics <http://www.azlyrics.com/>`_ : ``az_lyrics`` (**disabled by default**)
+4. `AZLyrics <http://www.azlyrics.com/>`_ : ``az_lyrics`` (**disabled by default**)
 
 The search order is same as enumerated above and cannot be changed. You can, however, disable or enable any of the sources using the same ``enable`` and ``disable`` commands. When a source is disabled, it is simply skipped during the search.
 
