@@ -21,18 +21,6 @@ version = re.search(
 # http://rst.ninjs.org/?n=86de1f4d5843b454098745d4a6026376&theme=basic
 with open("README.rst", "rb") as f:
     long_descr = f.read().decode("utf-8")
-
-# Code that runs only during building source distribution.
-if sys.argv[1] == 'sdist':
-
-    # don't allow building distributions with Python27
-    if sys.version_info[0] < 3:
-        raise Exception
-
-    # 'import' from the pre_sdist module inside the 'if' allows to
-    # use any python package safely.
-    from pre_sdist import reset_config
-    reset_config()
     
 
 # Install dependencies from requirements.txt (install_requires is not working)
