@@ -78,14 +78,14 @@ class Config():
 		Check if the configuration is valid
 		"""
 		# This forces user to set dirs before running the app for first time.
-		if Config.lyrics_dir == 'None':
+		if len(Config.lyrics_dir) == 0:
 			# see which directory in not set and raise BadConfigError with that as value
 			print('lyrics_dir is not set.')
 			print('Please use the "set" command to set lyrics_dir.')
 			print('use "lyrico --help" to view commands.')
 			return False
 
-		if Config.source_dir == 'None':
+		if len(Config.source_dir) == 0:
 			# see which directory in not set and raise BadConfigError with that as value
 			print('source_dir is not set.')
 			print('Please use the "set" command to set source_dir or pass it as parameter.')
