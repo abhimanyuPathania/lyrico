@@ -8,12 +8,15 @@
 	http://lyrics.wikia.com/wiki/<artist>:<title>
 
 	and then extracts lyrics from the HTML recieved.
+
+        URL rules: http://lyrics.wikia.com/wiki/LyricWiki:Page_Names
 """
 
 from __future__ import print_function
 from __future__ import unicode_literals
 
 import sys
+import re
 import requests
 
 try:
@@ -50,8 +53,9 @@ def download_from_lyric_wikia(song):
 	# replace spaces with underscores. This prints nicer URLs in log.
 	# (wikia's URL router converts spaces to underscores). '%20' work fine as well.
 	# Replace returns new strings
-	artist = song.artist.replace(' ', '_')
-	title = song.title.replace(' ', '_')
+	artist = lyric_wikia_capitalize(song.artist, False).replace(' ', '_')
+	title = lyric_wikia_capitalize(song.title, True).replace(' ', '_')
+
 
 	
 	# Since we are building our own URL and not passing 'params' to request.get;
@@ -119,3 +123,28 @@ def download_from_lyric_wikia(song):
 		# Don't overwrite and previous errors
 		if not song.error:
 			song.error = 'Lyrics not found. Check artist or title name.'
+
+def lyric_wikia_capitalize(string, noupper = True):
+        """
+        lyrics.wikia.com page name rules:
+        - Uppercase All Words
+        - No all-uppercase WORDS allowed in song titles (but in artist names)
+        - Keep StrANgeLy cased words
+
+        See http://lyrics.wikia.com/wiki/LyricWiki:Page_Names
+        """
+        pattern = re.compile("([\w]+)", re.UNICODE)
+        parts = pattern.split(string)
+
+        result = u""
+        for part in parts:
+                if not pattern.match(part):
+                        #no word, keep as it is
+                        result += part
+                        continue
+                if noupper and part.isupper():
+                        #everything uppercase? no!
+                        part = part.lower()
+                result += part[0].upper() + part[1:]
+
+        return result
