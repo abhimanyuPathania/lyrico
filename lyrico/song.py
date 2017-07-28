@@ -15,10 +15,10 @@ from mutagen import MutagenError
 from bs4 import BeautifulSoup
 
 # Import all the sources modules
-from .lyrico_sources.lyric_wikia import donwload_from_lyric_wikia
-from .lyrico_sources.az_lyrics import donwload_from_az_lyrics
-from .lyrico_sources.musix_match import donwload_from_musix_match
-from .lyrico_sources.lyricsmode import donwload_from_lyricsmode
+from .lyrico_sources.lyric_wikia import download_from_lyric_wikia
+from .lyrico_sources.az_lyrics import download_from_az_lyrics
+from .lyrico_sources.musix_match import download_from_musix_match
+from .lyrico_sources.lyricsmode import download_from_lyricsmode
 
 from .song_helper import get_song_data, get_song_list
 from .config import Config
@@ -100,18 +100,18 @@ class Song():
 
 		# Use sources according to user settings
 		if Config.lyric_wikia:
-			donwload_from_lyric_wikia(self)
+			download_from_lyric_wikia(self)
 
 		# Only try other sources if required
 
 		if not self.lyrics and Config.musix_match:
-			donwload_from_musix_match(self)
+			download_from_musix_match(self)
 
 		if not self.lyrics and Config.lyricsmode:
-			donwload_from_lyricsmode(self)
+			download_from_lyricsmode(self)
 
 		if not self.lyrics and Config.az_lyrics:
-			donwload_from_az_lyrics(self)
+			download_from_az_lyrics(self)
 
 		self.save_lyrics()
 

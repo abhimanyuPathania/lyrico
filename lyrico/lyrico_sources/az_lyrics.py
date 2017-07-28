@@ -32,7 +32,7 @@ from .build_requests import get_lyrico_headers
 from .lyrics_helper import test_lyrics
 
 
-# Defining 'request_headers' outside donwload function makes a single profile
+# Defining 'request_headers' outside download function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
 request_headers = get_lyrico_headers()
 
@@ -42,7 +42,7 @@ AZLyrics_CORRECTION = {
 	'the': 'thethe'
 }
 
-def donwload_from_az_lyrics(song):
+def download_from_az_lyrics(song):
 	
 	"""
 		Takes reference to the song object as input and
