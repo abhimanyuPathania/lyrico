@@ -76,7 +76,7 @@ def download_from_lyricsmode(song=None):
 		artist = LYRICSMODE_CORRECTION[artist]
 
 	# If the first char of artist is not a alphabet, use '0-9'
-	first_artist_char = artist[0]
+	first_artist_char = artist[0] if (len(artist) > 0) else '0'
 	if first_artist_char not in LOWERCASE_CHARS:
 		first_artist_char = '0-9'
 
