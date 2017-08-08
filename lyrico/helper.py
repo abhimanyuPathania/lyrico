@@ -79,6 +79,7 @@ def write_default_config(config_path):
 	config.set('sources', 'musix_match', 'True')
 	config.set('sources', 'lyricsmode', 'True')
 	config.set('sources', 'az_lyrics', 'False')
+	config.set('sources', 'chartlyrics', 'False')
 
 	# save to config.ini
 	with open(config_path, 'w') as configfile:

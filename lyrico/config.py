@@ -34,6 +34,7 @@ LYRICO_ACTIONS = {
 	'musix_match': 'sources',
 	'lyricsmode' : 'sources',
 	'az_lyrics': 'sources',
+	'chartlyrics': 'sources',
 }
 
 # Used to print commandline logging for enable/disable sources 
@@ -42,6 +43,7 @@ SOURCE_STR_MAP = {
 	'musix_match': 'musiXmatch',
 	'lyricsmode': 'LYRICSMODE',
 	'az_lyrics': 'AZLyrics',
+	'chartlyrics': 'ChartLyrics',
 }
 
 class Config():
@@ -101,6 +103,7 @@ class Config():
 		# if user disables all sources. Notify & force user to enable one.
 		if (not Config.lyric_wikia
 		    and not Config.az_lyrics
+		    and not Config.chartlyrics
 		    and not Config.musix_match
 		    and not Config.lyricsmode):
 			print('All lyrics sources are disabled. Please enable one.')
@@ -137,6 +140,8 @@ class Config():
 			Config.musix_match = conf.getboolean('sources', 'musix_match')
 			Config.lyricsmode = conf.getboolean('sources', 'lyricsmode')
 			Config.az_lyrics = conf.getboolean('sources', 'az_lyrics')
+			Config.chartlyrics = conf.getboolean('sources', 'chartlyrics') if conf.has_option('sources', 'chartlyrics') else False
+			Config.setBool('sources', 'chartlyrics', Config.chartlyrics)
 
 			# Loading this with user config, we need to call the load_config only once at start.
 			Config.lyric_files_in_dir = glob2.glob(os.path.join(Config.lyrics_dir, '**/*.txt'))
@@ -166,6 +171,7 @@ class Config():
 			Config.setBool('sources', 'musix_match', Config.musix_match)
 			Config.setBool('sources', 'lyricsmode', Config.lyricsmode)
 			Config.setBool('sources', 'az_lyrics', Config.az_lyrics)
+			Config.setBool('sources', 'chartlyrics', Config.chartlyrics)
 
 			with open(Config.config_path, 'w') as configfile:
 				Config.conf.write(configfile)
@@ -239,7 +245,7 @@ class Config():
 		if target not in LYRICO_ACTIONS:
 			print('Invalid lyrico action change attempted')
 			print('''"save_to_file", "save_to_tag" and "overwrite" are the only settings that can be enabled or disabled.''')
-			print('''"lyric_wikia", "musix_match", "lyricsmode" and "az_lyrics" are the only sources that can be enabled or disabled.''')
+			print('''"lyric_wikia", "musix_match", "lyricsmode", "az_lyrics" and "chartlyrics" are the only sources that can be enabled or disabled.''')
 			print('You attempted to change:', target)
 			print('use "lyrico --help" to view commands.')
 			return 

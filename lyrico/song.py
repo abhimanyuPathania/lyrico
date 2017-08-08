@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 # Import all the sources modules
 from .lyrico_sources.lyric_wikia import download_from_lyric_wikia
 from .lyrico_sources.az_lyrics import download_from_az_lyrics
+from .lyrico_sources.chartlyrics import download_from_chartlyrics
 from .lyrico_sources.musix_match import download_from_musix_match
 from .lyrico_sources.lyricsmode import download_from_lyricsmode
 
@@ -112,6 +113,9 @@ class Song():
 
 		if not self.lyrics and Config.az_lyrics:
 			download_from_az_lyrics(self)
+
+		if not self.lyrics and Config.chartlyrics:
+			download_from_chartlyrics(self)
 
 		self.save_lyrics()
 
@@ -356,6 +360,9 @@ class Song():
 				f.write("\n")
 
 				f.write("\t# 'AZLr' - AZLyrics")
+				f.write("\n")
+
+				f.write("\t# 'chart' - ChartLyrics")
 				f.write("\n\n")
 
 				# Add credits
