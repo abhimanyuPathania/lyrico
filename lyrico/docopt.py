@@ -170,7 +170,7 @@ class Command(Argument):
     def single_match(self, left):
         for n, pattern in enumerate(left):
             if type(pattern) is Argument:
-                if pattern.value == self.name:
+                if pattern.value.decode('utf-8') == self.name:
                     return n, Command(self.name, True)
                 else:
                     break

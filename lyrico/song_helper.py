@@ -255,6 +255,8 @@ def get_song_list(path):
 
 	song_list = []
 
+	path = path.decode("utf-8")
+
 	for ext in Config.audio_formats:
 		pattern = '**/*.' + ext
 		pattern_uppercase = '**/*.' + ext.upper()
