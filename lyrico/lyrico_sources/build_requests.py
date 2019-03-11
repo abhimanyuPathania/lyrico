@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 import copy
 import random
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 user_agents = [
 	'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:44.0) Gecko/20100101 Firefox/44.0',
@@ -65,4 +68,4 @@ def get_lnm_api_key():
 	return lnm_api_keys[random.randint( 0, (len(lnm_api_keys) - 1))]
 
 def test_req_dic():
-	print(request_headers)
+	logger.info(request_headers)

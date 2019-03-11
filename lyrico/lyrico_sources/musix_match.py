@@ -34,6 +34,9 @@ from .lyrics_helper import test_lyrics
 # per lyrico operation and not a new profile per each download in an operation.
 request_headers = get_lyrico_headers()
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 def donwload_from_musix_match(song):
 	
@@ -71,7 +74,7 @@ def donwload_from_musix_match(song):
 	mxm_url = 'https://www.musixmatch.com/lyrics/%s/%s' % (quote(artist), quote(title))
 
 	try:
-		print('\tTrying musixmatch:', mxm_url)
+		logger.info('\tTrying musixmatch: {}'.format(mxm_url))
 
 		res = requests.get(mxm_url, headers = request_headers)
 		res.raise_for_status()
