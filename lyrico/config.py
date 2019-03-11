@@ -7,6 +7,9 @@ from __future__ import unicode_literals
 import os
 import glob2
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
 	# Import the base class for all configparser errors as BaseConfigParserError
@@ -140,34 +143,34 @@ class Config():
 		except BadConfigError as e:
 			
 			if e.errno == 0:
-				print('Unable to find config.')
-				print('Please try installing lyrico again or contact creator.')
+				logger.info('Unable to find config.')
+				logger.info('Please try installing lyrico again or contact creator.')
 
 			if e.errno == 1:
-				print(e.value, 'is not set. ', end="")
-				print('Please use the "set" command to set', (value + '.'))
-				print('use "lyrico --help" to view commands.')
+				logger.info(e.value, 'is not set. ', end="")
+				logger.info('Please use the "set" command to set', (value + '.'))
+				logger.info('use "lyrico --help" to view commands.')
 				Config.show_settings()
 			
 			if e.errno == 2:
-				print('Both "save_to_file" and "save_to_tag" modes are disabled. Please enable one.')
-				print('use "lyrico --help" to view commands.')
+				logger.info('Both "save_to_file" and "save_to_tag" modes are disabled. Please enable one.')
+				logger.info('use "lyrico --help" to view commands.')
 				Config.show_settings()
 
 			if e.errno == 3:
-				print('All lyrics sources are disabled. Please enable one.')
-				print('use "lyrico --help" to view commands.')
+				logger.info('All lyrics sources are disabled. Please enable one.')
+				logger.info('use "lyrico --help" to view commands.')
 				Config.show_settings()
 
 		# Catch all config parser errors
 		except BaseConfigParserError as e:
-			print('Unable to load config.')
-			print(e)
+			logger.info('Unable to load config.')
+			logger.info(e)
 
 		# Catch file handling errors
 		except IOError as e:
-			print('Unable to load config.')
-			print(e)
+			logger.info('Unable to load config.')
+			logger.info(e)
 
 	@staticmethod
 	def set_dir(dir_type, path):
@@ -179,17 +182,17 @@ class Config():
 		"""
 
 		if dir_type != 'source_dir' and dir_type != 'lyrics_dir':
-			print('Invalid "dir_type". Only "source_dir" or "lyrics_dir" are valid types.')
-			print('You gave "dir_type":', dir_type)
-			print('use "lyrico --help" to view commands.')
+			logger.info('Invalid "dir_type". Only "source_dir" or "lyrics_dir" are valid types.')
+			logger.info('You gave "dir_type":', dir_type)
+			logger.info('use "lyrico --help" to view commands.')
 			return False
 
 		# If user is setting "source_dir", return if the path provided does not exist.
 		# This improves the usage - lyrico <source_dir>
 		if dir_type == 'source_dir' and not os.path.isdir(path):
-			print('"source_dir" does not exist. ', end="")
-			print('You gave "source_dir":', path)
-			print('Please enter path to an existing folder.')
+			logger.info('"source_dir" does not exist. ', end="")
+			logger.info('You gave "source_dir":', path)
+			logger.info('Please enter path to an existing folder.')
 			return False
 
 		# make directory if user is setting "lyrics_dir" and it does not exists.
@@ -197,7 +200,7 @@ class Config():
 		if dir_type == 'lyrics_dir':
 			try:
 				os.makedirs(path)
-				print('Directory does not exist. Creating new one.')
+				logger.info('Directory does not exist. Creating new one.')
 			except OSError:
 				if not os.path.isdir(path):
 					# this exception is handled by function calling set_dir
@@ -211,23 +214,23 @@ class Config():
 			# Errors are logged by save_config_to_file.
 			return False
 		
-		print(dir_type, 'updated.')
+		logger.info(dir_type, 'updated.')
 		if dir_type == 'source_dir':
-			print('lyrico will scan the following folder for audio files:')
+			logger.info('lyrico will scan the following folder for audio files:')
 		else:
-			print('lyrico will save lyrics files in the following folder:')
-		print('    ', path)
+			logger.info('lyrico will save lyrics files in the following folder:')
+		logger.info('    ', path)
 		return True
 
 	@staticmethod
 	def update_lyrico_actions(target, update_type):
 
 		if target not in LYRICO_ACTIONS:
-			print('Invalid lyrico action change attempted')
-			print('''"save_to_file", "save_to_tag" and "overwrite" are the only settings that can be enabled or disabled.''')
-			print('''"lyric_wikia", "lyrics_n_music", "musix_match", "lyricsmode" and "az_lyrics" are the only sources that can be enabled or disabled.''')
-			print('You attempted to change:', target)
-			print('use "lyrico --help" to view commands.')
+			logger.info('Invalid lyrico action change attempted')
+			logger.info('''"save_to_file", "save_to_tag" and "overwrite" are the only settings that can be enabled or disabled.''')
+			logger.info('''"lyric_wikia", "lyrics_n_music", "musix_match", "lyricsmode" and "az_lyrics" are the only sources that can be enabled or disabled.''')
+			logger.info('You attempted to change:', target)
+			logger.info('use "lyrico --help" to view commands.')
 			return 
 
 		# User is updating valid action/source
@@ -241,35 +244,35 @@ class Config():
 			# Errors are logged by save_config_to_file.
 			return
 
-		print(target, (update_type + 'd'))
+		logger.info(target, (update_type + 'd'))
 
 		if target == 'save_to_file':
-			print('lyrico will %ssave the downloaded lyrics to text files.' % log_str)
+			logger.info('lyrico will %ssave the downloaded lyrics to text files.' % log_str)
 
 		elif target == 'save_to_tag':
-			print('lyrico will %sembed the downloaded lyrics into song tags.' % log_str)
+			logger.info('lyrico will %sembed the downloaded lyrics into song tags.' % log_str)
 
 		elif target == 'overwrite':
 			if update_type == 'disable':
-				print('lyrico will detect the songs that already have lyrics, and will ignore them.')
+				logger.info('lyrico will detect the songs that already have lyrics, and will ignore them.')
 			else:
-				print('''lyrico will download lyrics for all songs detected in "source_dir" and overwrite lyrics if already present.''')
+				logger.info('''lyrico will download lyrics for all songs detected in "source_dir" and overwrite lyrics if already present.''')
 		else:
 			# Action is to enable/disable a source.
-			print('lyrico will %suse %s as a source for lyrics.' % (log_str, SOURCE_STR_MAP[target]))
+			logger.info('lyrico will %suse %s as a source for lyrics.' % (log_str, SOURCE_STR_MAP[target]))
 
 	@staticmethod
 	def show_settings():
 		
-		print('Your current settings:\n')
+		logger.info('Your current settings:\n')
 		# get list of section in config
 		for section in Config.conf.sections():
 			# for each section get list items.
 			# items are returned as list of tuples of type (key, value)
-			print(section.upper())
+			logger.info(section.upper())
 			for item in Config.conf.items(section):
-				print('   ', item[0], '=', item[1])
-			print('\n')
+				logger.info('   ', item[0], '=', item[1])
+			logger.info('\n')
 
 	@staticmethod
 	def save_config_to_file(section, key, value):
@@ -281,12 +284,12 @@ class Config():
 
 		# Catch all config parser errors
 		except BaseConfigParserError as e:
-			print('Unable to save settings to config.')
-			print(e)
+			logger.info('Unable to save settings to config.')
+			logger.info(e)
 			return False
 
 		# Catch file handling errors
 		except IOError as e:
-			print('Unable to save settings to config.')
-			print(e)
+			logger.info('Unable to save settings to config.')
+			logger.info(e)
 			return False

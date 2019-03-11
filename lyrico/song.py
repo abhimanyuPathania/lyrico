@@ -32,6 +32,9 @@ if sys.version_info[0] < 3:
     import codecs
     open = codecs.open
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Song():
 	"""Container objects repersenting each song globbed from source_dir"""
@@ -92,12 +95,12 @@ class Song():
 		"""
 
 		if not self.download_required():
-			print('\nSkipping', self.artist, '-', self.title)
-			print('Lyrics already present.')
+			logger.info('\nSkipping', self.artist, '-', self.title)
+			logger.info('Lyrics already present.')
 			return
 
 		# At this point there is nothing in self.error
-		print('\nDownloading:', self.artist, '-', self.title)
+		logger.info('\nDownloading:', self.artist, '-', self.title)
 
 		# Use sources according to user settings
 		if Config.lyric_wikia:
@@ -131,7 +134,7 @@ class Song():
 		"""
 		
 		if not self.lyrics:
-			print('Failed:', self.error)
+			logger.info('Failed:', self.error)
 			return
 
 		if self.lyrics and Config.save_to_file:
@@ -154,7 +157,7 @@ class Song():
 				# update the Song instance flag
 				self.saved_to_file = True
 
-				print('Success: Lyrics saved to file.')
+				logger.info('Success: Lyrics saved to file.')
 
 			except IOError as e:
 				err_str = str(e)
@@ -166,7 +169,7 @@ class Song():
 					err_str = '"lyrics_dir" does not exist. Please set a "lyric_dir" which exists.'
 
 				self.error = err_str
-				print('Failed:', err_str)
+				logger.error('Failed:', err_str)
 
 		if self.lyrics and Config.save_to_tag:
 			lyrics_key = FORMAT_KEYS[self.format]['lyrics']
@@ -197,17 +200,17 @@ class Song():
 				self.saved_to_tag = True
 				Song.lyrics_saved_to_tag_count += 1
 
-				print('Success: Lyrics saved to tag.')
+				logger.info('Success: Lyrics saved to tag.')
 
 			except MutagenError:
 				err_str = 'Cannot save lyrics to tag. Codec/Format not supported'
 				self.error = err_str
-				print('Failed:', err_str)
+				logger.error('Failed:', err_str)
 				
 			except IOError as e:
 				err_str = 'Cannot save lyrics to tag. The file is opened or in use.'
 				self.error = err_str
-				print('Failed:', err_str)
+				logger.error('Failed:', err_str)
 
 	def download_required(self):
 		"""
@@ -384,7 +387,7 @@ class Song():
 				f.write('\n\n\n\n')
 
 		except IOError as e:
-			print('Unable to build log.')
-			print('"lyrics_dir" does not exist. Please set "lyric_dir" to a folder which exists.')
+			logger.error('Unable to build log.')
+			logger.error('"lyrics_dir" does not exist. Please set "lyric_dir" to a folder which exists.')
 
 

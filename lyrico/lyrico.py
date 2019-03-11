@@ -30,6 +30,9 @@ from .config import Config
 # testpypi 0.6.0
 __version__ = "0.6.0"
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 def main():
 
@@ -68,7 +71,7 @@ def main():
 			try:
 				Config.set_dir(args['<dir_type>'], args['<full_path_to_dir>'])
 			except Exception as e:
-				print(e)
+				logger.warning(e)
 
 		if args['enable'] or args['disable']:
 			# setting 'save_to_file', 'save_to_tag' or 'overwrite'.
@@ -90,7 +93,7 @@ def main():
 			try:
 				set_dir_success = Config.set_dir('source_dir', args['<source_dir>'])
 			except Exception as e:
-				print(e)
+				logger.info(e)
 				# Don't go ahead with excution since user gave bad path or might have
 				# correct system settings?
 				return
@@ -104,8 +107,8 @@ def main():
 			Config.source_dir = args['<source_dir>']
 				
 		song_list = [Song(song_path) for song_path in get_song_list(Config.source_dir)]
-		print(len(song_list), 'songs detected.')
-		print('Metadata extracted for', (str(Song.valid_metadata_count) + '/' + str(len(song_list))), 'songs.')
+		logger.info(len(song_list), 'songs detected.')
+		logger.info('Metadata extracted for', (str(Song.valid_metadata_count) + '/' + str(len(song_list))), 'songs.')
 		for song in song_list:
 			# Only download lyrics if 'title' and 'artist' is present
 			# Error str is already present in song.error
@@ -116,15 +119,15 @@ def main():
 			else:
 				# If title was present, use that
 				if song.title:
-					print(song.title, 'was ignored.', song.error)
+					logger.info(song.title, 'was ignored.', song.error)
 				# else use audio file path
 				else:
-					print(song.path, 'was ignored.', song.error)
+					logger.info(song.path, 'was ignored.', song.error)
 
 
-		print('\nBuilding log...')
+		logger.info('\nBuilding log...')
 		Song.log_results(song_list)
-		print('FINISHED')
+		logger.info('FINISHED')
 		
 		# Disable windows unicode console anyways
 		if platform.system() == 'Windows':
