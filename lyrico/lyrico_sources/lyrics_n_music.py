@@ -25,6 +25,9 @@ from bs4 import BeautifulSoup
 from .build_requests import get_lyrico_headers, get_lnm_api_key
 from .lyrics_helper import test_lyrics
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 base_lnm_url = 'http://api.lyricsnmusic.com/songs'
 
@@ -59,7 +62,7 @@ def donwload_from_lnm(song):
 	request_headers['Content-type'] = 'application/json'
 
 	try:
-		print('\tTrying LYRICSnMUSIC...')
+		logger.info('\tTrying LYRICSnMUSIC...')
 		# On unable to find data, this request returns and empty list(JSON string)
 		# but with 200 success code
 		r_json = requests.get(base_lnm_url, params=data, headers = request_headers)

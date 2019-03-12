@@ -31,6 +31,9 @@ from bs4 import BeautifulSoup
 from .build_requests import get_lyrico_headers
 from .lyrics_helper import test_lyrics
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Defining 'request_headers' outside donwload function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
@@ -90,7 +93,7 @@ def donwload_from_az_lyrics(song):
 
 	azlyrics_url = 'http://www.azlyrics.com/lyrics/%s/%s.html' % (artist, title)
 	try:
-		print('\tTrying AZLyrics:', azlyrics_url)
+		logger.info('\tTrying AZLyrics: {}'.format(azlyrics_url))
 
 		res = requests.get(azlyrics_url, headers = request_headers)
 		res.raise_for_status()
@@ -102,7 +105,7 @@ def donwload_from_az_lyrics(song):
 
 	# Catch network errors
 	except (ConnectionError, Timeout) as e:
-		print(e)
+		logger.error(e)
 		error = 'No network connectivity.'
 	except HTTPError:
 		# Already carrying error string

@@ -28,6 +28,9 @@ from bs4 import BeautifulSoup
 from .build_requests import get_lyrico_headers
 from .lyrics_helper import test_lyrics
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Defining 'request_headers' outside donwload function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
@@ -75,7 +78,7 @@ def donwload_from_lyric_wikia(song):
 
 	lyrics_wikia_url = 'http://lyrics.wikia.com/wiki/%s:%s' % (quote(artist), quote(title))
 	try:
-		print('\tTrying Lyric Wikia:', lyrics_wikia_url)
+		logger.info('\tTrying Lyric Wikia: {}'.format(lyrics_wikia_url))
 
 		res = requests.get(lyrics_wikia_url, headers = request_headers)
 		res.raise_for_status()

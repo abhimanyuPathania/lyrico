@@ -30,6 +30,9 @@ from .config import Config
 from .helper import sanitize_data
 from .audio_format_keys import FORMAT_KEYS
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_key(tag, key, format):
 	# data stores the result of key lookup from the dictionary like object
@@ -200,7 +203,7 @@ def get_song_data(path):
 		error = 'Unable to read metadata. Unsupported codec or tag does not exist.'
 	except Exception as e:
 		error = str(e)
-		print(e)
+		logger.info(e)
 	else:
 		# This only runs if reading tags creates no exceptions
 		artist = get_key(tag, FORMAT_KEYS[song_format]['artist'], song_format)

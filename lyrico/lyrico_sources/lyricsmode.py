@@ -32,6 +32,9 @@ from bs4 import BeautifulSoup
 from .build_requests import get_lyrico_headers
 from .lyrics_helper import remove_accents, test_lyrics
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Defining 'request_headers' outside donwload function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
@@ -82,7 +85,7 @@ def donwload_from_lyricsmode(song=None):
 
 	lyricsmode_url = 'http://www.lyricsmode.com/lyrics/%s/%s/%s.html' % (first_artist_char, artist, title)
 	try:
-		print('\tTrying LYRICSMODE:', lyricsmode_url)
+		logger.info('\tTrying LYRICSMODE: {}'.format(lyricsmode_url))
 
 		res = requests.get(lyricsmode_url, headers = request_headers)
 		res.raise_for_status()
