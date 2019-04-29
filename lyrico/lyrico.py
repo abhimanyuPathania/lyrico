@@ -116,6 +116,15 @@ def main():
 
 	print('\nBuilding log...')
 	Song.log_results(song_list)
+	print(
+		'{songs} songs, {tagged} tagged, {files} lyric files, {existing} existing, {errors} errors'.format(
+			songs = len(song_list),
+			tagged = Song.lyrics_saved_to_tag_count,
+			files = Song.lyrics_saved_to_file_count,
+			existing = Song.lyrics_existing_count,
+			errors = Song.lyrics_errors_count
+		)
+	)
 	print('FINISHED')
 		
 	# Disable windows unicode console anyways

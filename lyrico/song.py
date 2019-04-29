@@ -44,6 +44,12 @@ class Song():
 	# Count for songs whose lyrics are successfully saved to tag.
 	lyrics_saved_to_tag_count = 0
 
+	# Number of errors during download or tagging
+	lyrics_errors_count = 0
+
+	# Number of songs that already had lyrics
+	lyrics_existing_count = 0
+
 	def __init__(self, path):
 
 		self.path = path
@@ -91,6 +97,7 @@ class Song():
 		"""
 
 		if not self.download_required():
+			Song.lyrics_existing_count += 1
 			print('\nSkipping', self.artist, '-', self.title)
 			print('Lyrics already present.')
 			return
@@ -127,6 +134,7 @@ class Song():
 		"""
 		
 		if not self.lyrics:
+			Song.lyrics_errors_count += 1
 			print('Failed:', self.error)
 			return
 
@@ -150,6 +158,7 @@ class Song():
 				# update the Song instance flag
 				self.saved_to_file = True
 
+				self.download_status = "ok"
 				print('Success: Lyrics saved to file.')
 
 			except IOError as e:
@@ -162,6 +171,7 @@ class Song():
 					err_str = '"lyrics_dir" does not exist. Please set a "lyrics_dir" which exists.'
 
 				self.error = err_str
+				Song.lyrics_errors_count += 1
 				print('Failed:', err_str)
 
 		if self.lyrics and Config.save_to_tag:
@@ -198,11 +208,13 @@ class Song():
 			except MutagenError:
 				err_str = 'Cannot save lyrics to tag. Codec/Format not supported'
 				self.error = err_str
+				Song.lyrics_errors_count += 1
 				print('Failed:', err_str)
 				
 			except IOError as e:
 				err_str = 'Cannot save lyrics to tag. The file is opened or in use.'
 				self.error = err_str
+				Song.lyrics_errors_count += 1
 				print('Failed:', err_str)
 
 	def download_required(self):
