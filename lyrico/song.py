@@ -159,7 +159,7 @@ class Song():
 				if e.errno == 13:
 					err_str = 'Cannot save lyrics to file. The file is opened or in use.'
 				if e.errno == 2:
-					err_str = '"lyrics_dir" does not exist. Please set a "lyric_dir" which exists.'
+					err_str = '"lyrics_dir" does not exist. Please set a "lyrics_dir" which exists.'
 
 				self.error = err_str
 				print('Failed:', err_str)
@@ -378,6 +378,6 @@ class Song():
 
 		except IOError as e:
 			print('Unable to build log.')
-			print('"lyrics_dir" does not exist. Please set "lyric_dir" to a folder which exists.')
+			print('"lyrics_dir" does not exist. Please set "lyrics_dir" to a folder which exists.')
 
 
