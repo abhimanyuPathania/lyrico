@@ -31,9 +31,9 @@ def get_config_path():
 	"""
 	config_path = user_config_dir("lyrico") + ".ini"
 	if not os.path.isfile(config_path):
-                write_default_config(config_path)
+		write_default_config(config_path)
 
-        return config_path
+	return config_path
 
 def sanitize_data(s):
 	"""Removes excess white-space from strings"""
@@ -64,16 +64,16 @@ def write_default_config(config_path):
 	config = ConfigParser()
 
 	# Force all settings to intended defaults
-        config.add_section('actions')
+	config.add_section('actions')
 	config.set('actions', 'save_to_file', 'True')
 	config.set('actions', 'save_to_tag', 'False')
 	config.set('actions', 'overwrite', 'False')
 
-        config.add_section('paths')
+	config.add_section('paths')
 	config.set('paths', 'source_dir', 'None')
 	config.set('paths', 'lyrics_dir', 'None')
 
-        config.add_section('sources')
+	config.add_section('sources')
 	config.set('sources', 'lyric_wikia', 'True')
 	config.set('sources', 'lyrics_n_music', 'True')
 	config.set('sources', 'musix_match', 'True')
