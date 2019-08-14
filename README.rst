@@ -306,7 +306,13 @@ They might ban your bot. ``az_lyrics`` sometimes bans your IP (not sure if perma
 
 Also, downloading 1000s of lyrics will be slow since ``lyrico`` does not batch-download. It sends one request to one source at a time. This is by design.
 
-I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``. 
+I personally use it at one or two albums at time and keep checking for any errors in ``log.txt``.
+
+Integration tests
+=================
+Run them:
+
+    $ python -m unittest discover
 
 Changelog
 ==========
