@@ -99,8 +99,8 @@ def download_from_lyricsmode(song=None):
 
 		# For lyricsmode, the lyrics are present in a div with id 'lyrics_text'
 		lyrics_text = soup.find(id='lyrics_text')
-                for tag in lyrics_text.find_all('div'):
-                        tag.clear()
+		for tag in lyrics_text.find_all('div'):
+			tag.clear()
 
 		lyrics = lyrics_text.get_text().strip() if lyrics_text else None
 

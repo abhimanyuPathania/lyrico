@@ -112,7 +112,7 @@ def download_from_az_lyrics(song):
 	else:
 		soup = BeautifulSoup(res.text, 'html.parser')
 		lyric_tag = soup.find('div', class_=None, id=None)
-                lyrics = lyric_tag.get_text().strip()
+		lyrics = lyric_tag.get_text().strip()
 			    
 	# Final check
 	if test_lyrics(lyrics):

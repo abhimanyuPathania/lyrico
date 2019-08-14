@@ -80,7 +80,7 @@ def download_from_musix_match(song):
 	except (ConnectionError, Timeout) as e:
 		song.error = 'No network connectivity.'
 	except HTTPError as e:
-                print(e)
+		print(e)
 		song.error = 'Lyrics not found. Check artist or title name.'
 	
 	# No exceptions raised and the HTML for lyrics page was fetched		
@@ -88,10 +88,10 @@ def download_from_musix_match(song):
 		soup = BeautifulSoup(res.text, 'html.parser')
 
 		# For musixmatch, lyrics are in <span class="lyrics__content__ok">
-                lyric_html = ""
+		lyric_html = ""
 		lyric_tags = soup.find_all('span','lyrics__content__ok')
-                for tag in lyric_tags:
-                        lyric_html += tag.get_text().strip() + "\n"
+		for tag in lyric_tags:
+			lyric_html += tag.get_text().strip() + "\n"
 		lyrics = lyric_html if lyric_html else None
 
 	# Final check
