@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 import sys
 import re
 import os
+from appdirs import *
 
 
 class BadConfigError(Exception):
@@ -26,13 +27,13 @@ def get_config_path():
 	"""
 		Gets the absolute path of dir containing script running the function.
 		Uses that to get the path of config file, since it is located in same dir.
-		Checks if file exists and raises BadConfigError if missings.
+		If config file is missing, a new one is created.
 	"""
-	config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
-	if os.path.isfile(config_path):
-		return config_path
-	else:
-		raise BadConfigError(0, 'Bad Config')
+	config_path = user_config_dir("lyrico") + ".ini"
+	if not os.path.isfile(config_path):
+		write_default_config(config_path)
+
+	return config_path
 
 def sanitize_data(s):
 	"""Removes excess white-space from strings"""
@@ -48,3 +49,37 @@ def sanitize_data(s):
 	s = re.sub(r'\s+', ' ', s)
 
 	return s
+
+def write_default_config(config_path):
+	# Import ConfigParser
+	try:
+		# >3.2
+		from configparser import ConfigParser
+	except ImportError:
+		# python27
+		# Refer to the older SafeConfigParser as ConfigParser
+		from ConfigParser import SafeConfigParser as ConfigParser
+
+	# Load lyrico.ini
+	config = ConfigParser()
+
+	# Force all settings to intended defaults
+	config.add_section('actions')
+	config.set('actions', 'save_to_file', 'True')
+	config.set('actions', 'save_to_tag', 'False')
+	config.set('actions', 'overwrite', 'False')
+
+	config.add_section('paths')
+	config.set('paths', 'source_dir', 'None')
+	config.set('paths', 'lyrics_dir', 'None')
+
+	config.add_section('sources')
+	config.set('sources', 'lyric_wikia', 'True')
+	config.set('sources', 'lyrics_n_music', 'True')
+	config.set('sources', 'musix_match', 'True')
+	config.set('sources', 'lyricsmode', 'True')
+	config.set('sources', 'az_lyrics', 'False')
+
+	# save to config.ini
+	with open(config_path, 'w') as configfile:
+		config.write(configfile)

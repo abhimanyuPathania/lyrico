@@ -17,7 +17,7 @@ try:
 except ImportError:
 	# Python27
 	from urllib import quote
-    
+
 from mutagen.id3 import ID3
 from mutagen.mp4 import MP4
 from mutagen.flac import FLAC
@@ -36,7 +36,7 @@ def get_key(tag, key, format):
 	# returned by mutagen. The results of key lookups are lists or None when it does not exist.
 	data = None
 
-	# result is the final value returned by get_key function. 
+	# result is the final value returned by get_key function.
 	result = None
 
 	if not tag:
@@ -69,7 +69,7 @@ def get_key(tag, key, format):
 	else:
 		# mp4, m4a, flac, ogg
 
-		# For all these formats, the data object is a simple dictionary 
+		# For all these formats, the data object is a simple dictionary
 		# with keys mapping to lists.
 
 		if format == 'm4a' or format == 'mp4':
@@ -90,7 +90,7 @@ def get_key(tag, key, format):
 			if key == FORMAT_KEYS[format]['lyrics']:
 
 				# separately treat lookup of lyrics in these formats
-				
+
 				# Loop through different keys to look for lyrics.
 
 				# 'LYRICS' will be used as standard for 'lyrico' for Vorbis Comments
@@ -106,16 +106,16 @@ def get_key(tag, key, format):
 				# Normal lookup for other properties
 				data = tag.get(key)
 
-		# till here the data ( for mp4, m4a, flac, ogg) will be a list 
+		# till here the data ( for mp4, m4a, flac, ogg) will be a list
 		# containing the value or None. Safely lookup in list
 		result = data[0] if data else None
 
 	# return sanitized value of result
-	return sanitize_data(result) 
+	return sanitize_data(result)
 
 
 def extract_ogg_tag(path):
-	
+
 	"""
 		Read tags out of .ogg files encoded with different codecs
 		Returns a tuple (tag, error)
@@ -126,7 +126,7 @@ def extract_ogg_tag(path):
 	# Encapsulate all try except blocks in if statements.
 	# Only read for tag if it already does not exist.
 
-	if not ogg_tag:		
+	if not ogg_tag:
 		try:
 			# Try to read ogg-Vorbis files
 			ogg_tag = OggVorbis(path)
@@ -135,7 +135,7 @@ def extract_ogg_tag(path):
 			# move to next codec type
 			pass
 
-	if not ogg_tag:		
+	if not ogg_tag:
 		try:
 			# Try to read ogg-FLAC files
 			ogg_tag = OggFLAC(path)
@@ -151,15 +151,15 @@ def extract_ogg_tag(path):
 	return (ogg_tag, error)
 
 def get_song_data(path):
-	
-	""" 
-		Extracts song artist, album, title and lyrics if present 
+
+	"""
+		Extracts song artist, album, title and lyrics if present
 		from audio file.
 
 		This is method is called by constructor of Song class which uses
 		the dict returned to instantiate song objects.
 
-		'path' is the absolute path to the audio file.  
+		'path' is the absolute path to the audio file.
 	"""
 	data = {}
 
@@ -169,7 +169,7 @@ def get_song_data(path):
 	album = None
 	lyrics = None
 	song_format = None
-	
+
 	lyrics_file_name = None
 	lyrics_file_path = None
 
@@ -254,6 +254,8 @@ def get_song_list(path):
 		Also checks for any inner directories."""
 
 	song_list = []
+
+	path = path
 
 	for ext in Config.audio_formats:
 		pattern = '**/*.' + ext

@@ -33,7 +33,7 @@ from .build_requests import get_lyrico_headers
 from .lyrics_helper import remove_accents, test_lyrics
 
 
-# Defining 'request_headers' outside donwload function makes a single profile
+# Defining 'request_headers' outside download function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
 request_headers = get_lyrico_headers()
 
@@ -47,7 +47,7 @@ LYRICSMODE_CORRECTION = {
 	'yo': 'y'
 }
 
-def donwload_from_lyricsmode(song=None):
+def download_from_lyricsmode(song=None):
 	
 	"""
 		Takes reference to the song object as input and
@@ -99,6 +99,9 @@ def donwload_from_lyricsmode(song=None):
 
 		# For lyricsmode, the lyrics are present in a div with id 'lyrics_text'
 		lyrics_text = soup.find(id='lyrics_text')
+		for tag in lyrics_text.find_all('div'):
+			tag.clear()
+
 		lyrics = lyrics_text.get_text().strip() if lyrics_text else None
 
 	# Final check

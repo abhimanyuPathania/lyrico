@@ -30,12 +30,12 @@ from bs4 import BeautifulSoup
 from .build_requests import get_lyrico_headers
 from .lyrics_helper import test_lyrics
 
-# Defining 'request_headers' outside donwload function makes a single profile
+# Defining 'request_headers' outside download function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
 request_headers = get_lyrico_headers()
 
 
-def donwload_from_musix_match(song):
+def download_from_musix_match(song):
 	
 	"""
 		Takes reference to the song object as input and
@@ -80,15 +80,19 @@ def donwload_from_musix_match(song):
 	except (ConnectionError, Timeout) as e:
 		song.error = 'No network connectivity.'
 	except HTTPError as e:
+		print(e)
 		song.error = 'Lyrics not found. Check artist or title name.'
 	
 	# No exceptions raised and the HTML for lyrics page was fetched		
 	else:
 		soup = BeautifulSoup(res.text, 'html.parser')
 
-		# For lyrics.wikia, the lyrics are present in a span with id 'lyrics-html'
-		lyric_html = soup.find(id='lyrics-html')
-		lyrics = lyric_html.get_text().strip() if lyric_html else None
+		# For musixmatch, lyrics are in <span class="lyrics__content__ok">
+		lyric_html = ""
+		lyric_tags = soup.find_all('span','lyrics__content__ok')
+		for tag in lyric_tags:
+			lyric_html += tag.get_text().strip() + "\n"
+		lyrics = lyric_html if lyric_html else None
 
 	# Final check
 	if test_lyrics(lyrics):

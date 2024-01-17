@@ -15,11 +15,10 @@ from mutagen import MutagenError
 from bs4 import BeautifulSoup
 
 # Import all the sources modules
-from .lyrico_sources.lyric_wikia import donwload_from_lyric_wikia
-from .lyrico_sources.lyrics_n_music import donwload_from_lnm
-from .lyrico_sources.az_lyrics import donwload_from_az_lyrics
-from .lyrico_sources.musix_match import donwload_from_musix_match
-from .lyrico_sources.lyricsmode import donwload_from_lyricsmode
+from .lyrico_sources.lyric_wikia import download_from_lyric_wikia
+from .lyrico_sources.az_lyrics import download_from_az_lyrics
+from .lyrico_sources.musix_match import download_from_musix_match
+from .lyrico_sources.lyricsmode import download_from_lyricsmode
 
 from .song_helper import get_song_data, get_song_list
 from .config import Config
@@ -44,6 +43,12 @@ class Song():
 
 	# Count for songs whose lyrics are successfully saved to tag.
 	lyrics_saved_to_tag_count = 0
+
+	# Number of errors during download or tagging
+	lyrics_errors_count = 0
+
+	# Number of songs that already had lyrics
+	lyrics_existing_count = 0
 
 	def __init__(self, path):
 
@@ -92,6 +97,7 @@ class Song():
 		"""
 
 		if not self.download_required():
+			Song.lyrics_existing_count += 1
 			print('\nSkipping', self.artist, '-', self.title)
 			print('Lyrics already present.')
 			return
@@ -101,21 +107,18 @@ class Song():
 
 		# Use sources according to user settings
 		if Config.lyric_wikia:
-			donwload_from_lyric_wikia(self)
+			download_from_lyric_wikia(self)
 
 		# Only try other sources if required
 
-		if not self.lyrics and Config.lyrics_n_music:
-			donwload_from_lnm(self)
-
 		if not self.lyrics and Config.musix_match:
-			donwload_from_musix_match(self)
+			download_from_musix_match(self)
 
 		if not self.lyrics and Config.lyricsmode:
-			donwload_from_lyricsmode(self)
+			download_from_lyricsmode(self)
 
 		if not self.lyrics and Config.az_lyrics:
-			donwload_from_az_lyrics(self)
+			download_from_az_lyrics(self)
 
 		self.save_lyrics()
 
@@ -131,6 +134,7 @@ class Song():
 		"""
 		
 		if not self.lyrics:
+			Song.lyrics_errors_count += 1
 			print('Failed:', self.error)
 			return
 
@@ -154,6 +158,7 @@ class Song():
 				# update the Song instance flag
 				self.saved_to_file = True
 
+				self.download_status = "ok"
 				print('Success: Lyrics saved to file.')
 
 			except IOError as e:
@@ -163,9 +168,10 @@ class Song():
 				if e.errno == 13:
 					err_str = 'Cannot save lyrics to file. The file is opened or in use.'
 				if e.errno == 2:
-					err_str = '"lyrics_dir" does not exist. Please set a "lyric_dir" which exists.'
+					err_str = '"lyrics_dir" does not exist. Please set a "lyrics_dir" which exists.'
 
 				self.error = err_str
+				Song.lyrics_errors_count += 1
 				print('Failed:', err_str)
 
 		if self.lyrics and Config.save_to_tag:
@@ -202,11 +208,13 @@ class Song():
 			except MutagenError:
 				err_str = 'Cannot save lyrics to tag. Codec/Format not supported'
 				self.error = err_str
+				Song.lyrics_errors_count += 1
 				print('Failed:', err_str)
 				
 			except IOError as e:
 				err_str = 'Cannot save lyrics to tag. The file is opened or in use.'
 				self.error = err_str
+				Song.lyrics_errors_count += 1
 				print('Failed:', err_str)
 
 	def download_required(self):
@@ -353,9 +361,6 @@ class Song():
 				f.write("\t# 'WIKI' - Lyric Wikia")
 				f.write("\n")
 
-				f.write("\t# 'LnM' - LYRICSnMUSIC")
-				f.write("\n")
-
 				f.write("\t# 'mXm' - musiXmatch")
 				f.write("\n")
 
@@ -385,6 +390,6 @@ class Song():
 
 		except IOError as e:
 			print('Unable to build log.')
-			print('"lyrics_dir" does not exist. Please set "lyric_dir" to a folder which exists.')
+			print('"lyrics_dir" does not exist. Please set "lyrics_dir" to a folder which exists.')
 
 

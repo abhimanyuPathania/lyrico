@@ -32,7 +32,7 @@ from .build_requests import get_lyrico_headers
 from .lyrics_helper import test_lyrics
 
 
-# Defining 'request_headers' outside donwload function makes a single profile
+# Defining 'request_headers' outside download function makes a single profile
 # per lyrico operation and not a new profile per each download in an operation.
 request_headers = get_lyrico_headers()
 
@@ -42,7 +42,7 @@ AZLyrics_CORRECTION = {
 	'the': 'thethe'
 }
 
-def donwload_from_az_lyrics(song):
+def download_from_az_lyrics(song):
 	
 	"""
 		Takes reference to the song object as input and
@@ -111,23 +111,8 @@ def donwload_from_az_lyrics(song):
 	# No exceptions raised and the HTML for lyrics was downloaded		
 	else:
 		soup = BeautifulSoup(res.text, 'html.parser')
-		lyricsh = soup.find(class_='lyricsh')
-		siblings = lyricsh.find_next_siblings() if lyricsh else None
-
-		if siblings and check_siblings(siblings, title, regex_url):
-
-			raw_lyrics = siblings[2].get_text().strip().replace('\r', '')
-
-			# Now try to extact the actual lyrics using following Regular Expression
-
-			# 10 or more newlines followed by 1 or more 'space' and
-			# followed by 'Submit'
-			regex_lyr = re.compile(r"\n{10,}[ ]+Submit")
-
-			match = re.search(regex_lyr, raw_lyrics)
-			if match and match.group(0):
-				# Everything before the match will contain the lyrics
-			    lyrics = raw_lyrics[0 : match.start()]
+		lyric_tag = soup.find('div', class_=None, id=None)
+		lyrics = lyric_tag.get_text().strip()
 			    
 	# Final check
 	if test_lyrics(lyrics):
